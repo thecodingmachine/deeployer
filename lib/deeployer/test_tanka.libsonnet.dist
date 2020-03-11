@@ -1,0 +1,67 @@
+local c = import 'environment.libsonnet';
+
+(import "ksonnet-util/kausal.libsonnet")+
+(import "config.libsonnet")+
+
+
+{
+// declaring ressource types
+local deployment =  $.apps.v1.deployment,
+local service = $.core.v1.service,
+local ingress = $.extensions.v1beta1.ingress,
+local ingressRule = ingress.mixin.spec.rulesType,
+local container = $.core.v1.container,
+local containerPort = $.core.v1.containerPort ,
+local ImagePullSecret = $.apps.v1.deployment.mixin.spec.template.spec.imagePullSecretsType,
+local env = $.core.v1.container.envType,
+local envFrom = $.core.v1.container.envFromSource,
+local volumeMount = $.core.v1.container.volumeMountsType,
+
+
+
+local f = function(deploymentName, data) {
+                        deployment: deployment.new(
+                                        name=data.name,
+                                          replicas=1,
+                                           containers=[container.new(data.name, data.image)+
+                                                        container.withPorts([containerPort.new('p'+port, port) for port in data.ports])+
+                                                        container.withImagePullPolicy('Always') + 
+                                                        container.withEnv([env.mixin.valueFrom.secretKeyRef.withName(key).withKey(data.envFrom.secretKeyRef[key]) for key in std.objectFields(data.envFrom.secretKeyRef) ],) +
+                                                        container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)]) ],                                                       
+                                             podLabels=data.labels,
+                                        )+ 
+                        deployment.mixin.spec.strategy.withType("Recreate")+
+                        deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],),  
+
+                        
+service: $.util.serviceFor(self.deployment),         
+             
+},
+
+local f1 = function(serviceName, data) {
+                        service: service.new(name=data.name+'-service' ,selector= data.labels , ports=[containerPort.new(port) for port in data.ports],),
+},
+
+
+local f2 = function(IngressName, data) {
+                        ingress: ingress.new()+
+                                    ingress.mixin.metadata.withName(data.ingress.name)+
+                                    ingress.mixin.metadata.withLabels(data.labels)+
+                                    ingress.mixin.metadata.withAnnotations(data.annotations)+
+                                    ingress.mixin.spec.backend.withServiceName(data.name+'-service').withServicePort([containerPort.new(port) for port in data.ports],)+
+                                    ingress.mixin.spec.withRules([ingressRule.new()+ 
+                                                                    ingressRule.withHost(data.ingress.host)+
+                                                                        ingressRule.mixin.http.withPaths(data.ingress.path)],)
+},
+
+
+// pod1: [ std.mapWithKey(f, c), std.mapWithKey(f1,c), ],
+
+// pod2: [std.mapWithKey(f,c), std.mapWithKey(f1,c), std.mapWithKey(f2,c)],
+
+
+
+test_tanka: std.mapWithKey(f, c),
+
+
+}
