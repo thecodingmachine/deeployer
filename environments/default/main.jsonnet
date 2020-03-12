@@ -1,6 +1,6 @@
 // environments/prom-grafana/prod
 (import 'ksonnet-util/kausal.libsonnet') +
-(import "deeployer/deeployer.libsonnet")+
+(import "deeployer/config.libsonnet")+
 
 {
 
