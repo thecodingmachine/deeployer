@@ -66,7 +66,9 @@ local f = function(deploymentName, data) {
                 else if std.objectHas(data, 'ports') then {}
 ),
 
-deeployer : std.mapWithKey(f,c),
+deeployer:: {
+  generateResources(config):: std.mapWithKey(f,config.containers),
+},
 
 
 }

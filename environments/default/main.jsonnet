@@ -1,13 +1,12 @@
 // environments/prom-grafana/prod
 (import 'ksonnet-util/kausal.libsonnet') +
-(import "deeployer/config.libsonnet")+
+(import "deeployer/resource_generator.libsonnet")+
 
 {
-
-environment:: {
-  deeployer: {},
-}
+local config = import '../../deeployer.libsonnet',
+local deeployer = $.deeployer,
 
 
+generatedConf: deeployer.generateResources(config)
 
 }
