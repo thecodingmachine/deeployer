@@ -1,9 +1,8 @@
 
 (import "ksonnet-util/kausal.libsonnet")+
-(import "deeployer.libsonnet")+
 
 {
-local config = import 'config.libsonnet',
+local config = import 'deeployer.libsonnet',
 local c = config.containers,
 
 // declaring ressource types
@@ -17,87 +16,57 @@ local ImagePullSecret = $.apps.v1.deployment.mixin.spec.template.spec.imagePullS
 local env = $.core.v1.container.envType,
 local envFrom = $.core.v1.container.envFromSource,
 local volumeMount = $.core.v1.container.volumeMountsType,
-
+local volume = $.core.v1.deployment.volumesType,
+local pvc = $.core.v1.persistentVolumeClaim,
+local resources = $.core.v1.container.resourcesType,
 
 local f = function(deploymentName, data) {
                         deployment: deployment.new(
                                         name=data.name,
-                                          replicas=1,
+                                          replicas=data.replicas,
                                            containers=[container.new(data.name, data.image)+
                                                          (if std.objectHas(data, 'ports') then container.withPorts([containerPort.new('p'+port, port) for port in data.ports]) else {})
                                                          +
                                                         container.withImagePullPolicy('Always') + 
                                                         container.withEnv([env.mixin.valueFrom.secretKeyRef.withName(key).withKey(data.envFrom.secretKeyRef[key]) for key in std.objectFields(data.envFrom.secretKeyRef) ],) +
-                                                        container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)]) ],                                                       
+                                                        container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)])+
+                                                        container.withVolumeMounts([volumeMount.new(std.objectFields(data.volumeMounts) , mountPath=data.volumeMounts[key].mountPath,readOnly=false) for key in std.objectFields(data.volumeMounts) ]),
+                                                        container.mixin.resources.withRequests(data.quotas.min).withLimits(data.quotas.max) ],                                                       
                                              podLabels=data.labels,
                                         )+ 
                         deployment.mixin.spec.strategy.withType("Recreate")+
                         deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],),  
-
+        
+                        // local diskSpace = [data.volumeMounts[key].diskSpace for key in std.objectFields(data.volumeMounts)],
+                        // local pvcName = ["pvc-"+data.volumeMounts[key] for key in std.objectFields(data.volumeMounts)],
+                        // pvc : pvc.new()+
+                        //         pvc.mixin.metadata.withName(pvcName) +
+                        //         pvc.mixin.spec.withAccessModes("ReadWriteOnce",)+
+                        //         pvc.mixin.spec.resources.withRequests(diskSpace),
                         
 
- } + (if std.objectHas(data, 'ports') then {
-                        service: $.util.serviceFor(self.deployment),
- } else {})
-  + (if std.objectHas(data, 'host') then 
-      //local ingressPort = -1,
-      (if !std.objectHas(data, 'ports') || std.length(data.ports) == 0 then
-        error "There is no port defined for service \"" + deploymentName + "\""
-      else (if std.length(data.ports) > 1 then
-        error "For service \"" + deploymentName + "\", there is a host defined but several ports open. We don't support this case yet."
-      else {
-                        ingress: ingress.new()+
-                                    ingress.mixin.metadata.withName("ingress-"+deploymentName)+
-                                    //ingress.mixin.metadata.withLabels(data.labels)+
-                                    //ingress.mixin.metadata.withAnnotations(data.annotations)+
-                                    ingress.mixin.spec.backend.withServiceName("ingress-"+deploymentName+'-service').withServicePort([containerPort.new('p'+port, port) for port in data.ports],)+
-                                    ingress.mixin.spec.withRules([ingressRule.new()+ 
-                                                                    ingressRule.withHost(data.host)+
-                                                                        ingressRule.mixin.http.withPaths('/')],)
-      }))                                                      
-  else {})
+ } + (if std.objectHas(data, 'ports') then 
+        (if std.objectHas(data, 'host') then 
+        { service: $.util.serviceFor(self.deployment),
+          ingress: ingress.new()+
+                      ingress.mixin.metadata.withName("ingress-"+deploymentName)+
+                          //ingress.mixin.metadata.withLabels(data.labels)+
+                              //ingress.mixin.metadata.withAnnotations(data.annotations)+
+                                  ingress.mixin.spec.backend.withServiceName("ingress-"+deploymentName+'-service').withServicePort([containerPort.new('p'+port, port) for port in data.ports],)+
+                                      ingress.mixin.spec.withRules([ingressRule.new()+ 
+                                            ingressRule.withHost(data.host)+
+                                                  ingressRule.mixin.http.withPaths('/')],),}
+    
+      else { service : $.util.serviceFor(self.deployment), })
  
- ,
+      else if !std.objectHas(data, 'ports') then error " Can't create container by deployment without any port with deeployer "
+        else if std.objectHas(data, 'host') then error " Can't expose service by host \"" + data.host + "\" without a port "
+          else if std.length(data.ports) > 1 then error " For service \"" + deploymentName + "\", there is a host defined but several ports open. We don't support this case yet. "
+              else if std.length(data.ports) == 0 then error " There is no port defined for service \"" + deploymentName + "\""
+                else if std.objectHas(data, 'ports') then {}
+),
 
-//  local ds = function(deploymentName, data) {
-//                         deployment: deployment.new(
-//                                         name=data.name,
-//                                           replicas=1,
-//                                            containers=[container.new(data.name, data.image)+
-//                                                         container.withPorts([containerPort.new('p'+port, port) for port in data.ports])+
-//                                                         container.withImagePullPolicy('Always') + 
-//                                                         container.withEnv([env.mixin.valueFrom.secretKeyRef.withName(key).withKey(data.envFrom.secretKeyRef[key]) for key in std.objectFields(data.envFrom.secretKeyRef) ],) +
-//                                                         container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)]) ],                                                       
-//                                              podLabels=data.labels,
-//                                         )+ 
-//                         deployment.mixin.spec.strategy.withType("Recreate")+
-//                         deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],),  
+deeployer : std.mapWithKey(f,c),
 
-                        
-//                         service: $.util.serviceFor(self.deployment),
-//  } ,
-
-//  local d = function(deploymentName, data) {
-//                         deployment: deployment.new(
-//                                         name=data.name,
-//                                           replicas=1,
-//                                            containers=[container.new(data.name, data.image)+
-//                                                         container.withPorts([containerPort.new('p'+port, port) for port in data.ports])+
-//                                                         container.withImagePullPolicy('Always') + 
-//                                                         container.withEnv([env.mixin.valueFrom.secretKeyRef.withName(key).withKey(data.envFrom.secretKeyRef[key]) for key in std.objectFields(data.envFrom.secretKeyRef) ],) +
-//                                                         container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)]) ],                                                       
-//                                              podLabels=data.labels,
-//                                         )+ 
-//                         deployment.mixin.spec.strategy.withType("Recreate")+
-//                         deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],),  
-
-
-deeployer : std.mapWithKey(f,c) ,
-
-// local func = checkConfigValues(c) {
-//   checking : [if c.key.port==' ' then [deeployer : std.mapWithKey()] for key in std.objectFields(c)   ] ,
-// },
 
 }
-
-
