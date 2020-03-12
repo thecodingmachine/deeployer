@@ -2,9 +2,6 @@
 (import "ksonnet-util/kausal.libsonnet")+
 
 {
-local config = import 'deeployer.libsonnet',
-local c = config.containers,
-
 // declaring ressource types
 local deployment =  $.apps.v1.deployment,
 local service = $.core.v1.service,
