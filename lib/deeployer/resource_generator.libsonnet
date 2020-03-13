@@ -28,7 +28,7 @@ local f = function(deploymentName, data) {
                                                         container.withImagePullPolicy('Always') + 
                                                         container.withEnv([env.mixin.valueFrom.secretKeyRef.withName(key).withKey(data.envFrom.secretKeyRef[key]) for key in std.objectFields(data.envFrom.secretKeyRef) ],) +
                                                         container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)])+
-                                                        container.withVolumeMounts([volumeMount.new(std.objectFields(data.volumeMounts) , mountPath=data.volumeMounts[key].mountPath,readOnly=false) for key in std.objectFields(data.volumeMounts) ]),
+                                                        container.withVolumeMounts([volumeMount.new(volumeName , mountPath=data.volumeMounts[volumeName].mountPath,readOnly=false) for volumeName in std.objectFields(data.volumeMounts) ]),
                                                         container.mixin.resources.withRequests(data.quotas.min).withLimits(data.quotas.max) ],                                                       
                                              podLabels=data.labels,
                                         )+ 
