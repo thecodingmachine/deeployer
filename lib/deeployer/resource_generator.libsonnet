@@ -18,7 +18,7 @@ local pvc = $.core.v1.persistentVolumeClaim,
 local resources = $.core.v1.container.resourcesType,
 
 local f = function(deploymentName, data) {
-                        local fv = function(volumeName, volumeData) deployment.mixin.spec.template.spec.withVolumes([volume.fromPersistentVolumeClaim(std.objectFields(data.volumeMounts),"-pvc"+volumeName)]),                               
+                        
                         deployment: deployment.new(
                                         name=data.name,
                                           replicas=data.replicas,
@@ -34,7 +34,8 @@ local f = function(deploymentName, data) {
                                         )+ 
                         deployment.mixin.spec.strategy.withType("Recreate")+
                         deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],)+
-                        std.mapWithKey(fv, data.volumeMounts),
+                        deployment.mixin.spec.template.spec.withVolumes([volume.fromPersistentVolumeClaim(volumeName, volumeName+"-pvc") for volumeName in std.objectFields(data.volumeMounts) ]),
+                        //std.mapWithKey(fv, data.volumeMounts),
                         
 
  } + (if std.objectHas(data, 'ports') then 
@@ -57,7 +58,7 @@ local f = function(deploymentName, data) {
               else if std.length(data.ports) == 0 then error " There is no port defined for service \"" + deploymentName + "\""
                 else if std.objectHas(data, 'ports') then {}
 ) + {
-  pvcs: std.mapWithKey(function(pvcName, pvcData) pvc.new() +
+  pvcs: std.mapWithKey(function(pvcName, pvcData) { apiVersion: 'v1', kind: 'PersistentVolumeClaim' } +
                                 pvc.mixin.metadata.withName(pvcName+"-pvc") +
                                 pvc.mixin.spec.withAccessModes("ReadWriteOnce",)+
                                 pvc.mixin.spec.resources.withRequests(["storage : "+pvcData.diskSpace]),
