@@ -13,7 +13,7 @@ local ImagePullSecret = $.apps.v1.deployment.mixin.spec.template.spec.imagePullS
 local env = $.core.v1.container.envType,
 local envFrom = $.core.v1.container.envFromSource,
 local volumeMount = $.core.v1.container.volumeMountsType,
-local volume = $.core.v1.deployment.volumesType,
+local volume = $.apps.v1.deployment.mixin.spec.template.spec.volumesType,
 local pvc = $.core.v1.persistentVolumeClaim,
 local resources = $.core.v1.container.resourcesType,
 
@@ -34,7 +34,7 @@ local f = function(deploymentName, data) {
                                         )+ 
                         deployment.mixin.spec.strategy.withType("Recreate")+
                         deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],)+
-                        std.mapwithKey(fv, data.volumeMounts),  
+                        std.mapWithKey(fv, data.volumeMounts),
                         
 
  } + (if std.objectHas(data, 'ports') then 
