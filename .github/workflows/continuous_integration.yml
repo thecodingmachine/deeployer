@@ -23,6 +23,6 @@ jobs:
           tar xvzf jsonnet.tar.gz
           chmod +x jsonnet
           chmod +x jsonnetfmt
-          mv jsonnet /usr/local/bin/jsonnet
-          mv jsonnetfmt /usr/local/bin/jsonnetfmt
-          
+          sudo mv jsonnet /usr/local/bin/jsonnet
+          sudo mv jsonnetfmt /usr/local/bin/jsonnetfmt
+          rm jsonnet.tar.gz
