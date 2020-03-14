@@ -13,11 +13,12 @@ local ImagePullSecret = $.apps.v1.deployment.mixin.spec.template.spec.imagePullS
 local env = $.core.v1.container.envType,
 local envFrom = $.core.v1.container.envFromSource,
 local volumeMount = $.core.v1.container.volumeMountsType,
-local volume = $.core.v1.deployment.volumesType,
+local volume = $.apps.v1.deployment.mixin.spec.template.spec.volumesType,
 local pvc = $.core.v1.persistentVolumeClaim,
 local resources = $.core.v1.container.resourcesType,
 
 local f = function(deploymentName, data) {
+                        
                         deployment: deployment.new(
                                         name=data.name,
                                           replicas=data.replicas,
@@ -27,19 +28,14 @@ local f = function(deploymentName, data) {
                                                         container.withImagePullPolicy('Always') + 
                                                         container.withEnv([env.mixin.valueFrom.secretKeyRef.withName(key).withKey(data.envFrom.secretKeyRef[key]) for key in std.objectFields(data.envFrom.secretKeyRef) ],) +
                                                         container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)])+
-                                                        container.withVolumeMounts([volumeMount.new(std.objectFields(data.volumeMounts) , mountPath=data.volumeMounts[key].mountPath,readOnly=false) for key in std.objectFields(data.volumeMounts) ]),
+                                                        container.withVolumeMounts([volumeMount.new(volumeName , mountPath=data.volumeMounts[volumeName].mountPath,readOnly=false) for volumeName in std.objectFields(data.volumeMounts) ]),
                                                         container.mixin.resources.withRequests(data.quotas.min).withLimits(data.quotas.max) ],                                                       
                                              podLabels=data.labels,
                                         )+ 
                         deployment.mixin.spec.strategy.withType("Recreate")+
-                        deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],),  
-        
-                        // local diskSpace = [data.volumeMounts[key].diskSpace for key in std.objectFields(data.volumeMounts)],
-                        // local pvcName = ["pvc-"+data.volumeMounts[key] for key in std.objectFields(data.volumeMounts)],
-                        // pvc : pvc.new()+
-                        //         pvc.mixin.metadata.withName(pvcName) +
-                        //         pvc.mixin.spec.withAccessModes("ReadWriteOnce",)+
-                        //         pvc.mixin.spec.resources.withRequests(diskSpace),
+                        deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName("tcmregistry")],)+
+                        deployment.mixin.spec.template.spec.withVolumes([volume.fromPersistentVolumeClaim(volumeName, volumeName+"-pvc") for volumeName in std.objectFields(data.volumeMounts) ]),
+                        //std.mapWithKey(fv, data.volumeMounts),
                         
 
  } + (if std.objectHas(data, 'ports') then 
@@ -61,7 +57,15 @@ local f = function(deploymentName, data) {
           else if std.length(data.ports) > 1 then error " For service \"" + deploymentName + "\", there is a host defined but several ports open. We don't support this case yet. "
               else if std.length(data.ports) == 0 then error " There is no port defined for service \"" + deploymentName + "\""
                 else if std.objectHas(data, 'ports') then {}
-),
+) + {
+  pvcs: std.mapWithKey(function(pvcName, pvcData) { apiVersion: 'v1', kind: 'PersistentVolumeClaim' } +
+                                pvc.mixin.metadata.withName(pvcName+"-pvc") +
+                                pvc.mixin.spec.withAccessModes("ReadWriteOnce",)+
+                                pvc.mixin.spec.resources.withRequests(["storage : "+pvcData.diskSpace]),
+                                 data.volumeMounts),
+},
+  
+
 
 deeployer:: {
   generateResources(config):: std.mapWithKey(f,config.containers),

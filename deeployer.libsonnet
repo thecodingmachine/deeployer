@@ -32,7 +32,7 @@
 
 
         volumeMounts: {
-              'mysqldata': {
+              mysqldata: {
                 mountPath : '/var/lib/mysql',
                 diskSpace : {'Storage' : '4Gi'}  ,
                 persistent : 'yes',  // type 'no' if you don't need any pvc !
