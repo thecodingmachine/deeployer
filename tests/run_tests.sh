@@ -32,14 +32,16 @@ function expectError() {
 function expectValue() {
     echo "  Running test:        $1"
 
+    set -o pipefail
     OUTPUT=`jsonnet "$2" | jq "$3"`
     if [[ $? != 0 ]]; then
         echo -e "\e[31m❌\e[39m Jsonnet returned an error code"
         exit 1
     fi
+    set +o pipefail
     (echo $OUTPUT | grep "$3") > /dev/null
     if [[ $OUTPUT != "$4" ]]; then
-        echo "  Expected '$4'"
+        echo -e "\e[31m❌\e[39m Expected '$4'"
         echo "  Instead, got '$OUTPUT'"
         exit 1
     fi
