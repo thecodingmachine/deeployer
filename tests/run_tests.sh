@@ -12,11 +12,13 @@ function expectError() {
     OUTPUT=`jsonnet "$2" 2>&1`
     if [[ $? == 0 ]]; then
         echo "Expected an error message"
+        echo "Instead, got '$OUTPUT'"
         exit 1
     fi
     (echo $OUTPUT | grep "$3") > /dev/null
     if [[ $? != 0 ]]; then
         echo "Expected error message '$3'"
+        echo "Instead, got '$OUTPUT'"
         exit 1
     fi
 
@@ -37,7 +39,8 @@ function expectValue() {
     fi
     (echo $OUTPUT | grep "$3") > /dev/null
     if [[ $OUTPUT != "$4" ]]; then
-        echo "Expected '$4', got '$OUTPUT'"
+        echo "Expected '$4'"
+        echo "Instead, got '$OUTPUT'"
         exit 1
     fi
 
