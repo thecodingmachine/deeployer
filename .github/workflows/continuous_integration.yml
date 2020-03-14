@@ -26,3 +26,7 @@ jobs:
           sudo mv jsonnet /usr/local/bin/jsonnet
           sudo mv jsonnetfmt /usr/local/bin/jsonnetfmt
           rm jsonnet.tar.gz
+
+      - name: "Run tests"
+        run: ./run_tests.sh
+        working-directory: "tests"
