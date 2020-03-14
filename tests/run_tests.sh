@@ -7,22 +7,22 @@ export JSONNET_PATH=../vendor/:../lib/
 # Second parameter: libsonnet test file
 # Third parameter: Expected error message
 function expectError() {
-    echo "Running test: $1"
+    echo "  Running test: $1"
 
     OUTPUT=`jsonnet "$2" 2>&1`
     if [[ $? == 0 ]]; then
-        echo "Expected an error message"
-        echo "Instead, got '$OUTPUT'"
+        echo -e "\e[31m❌\e[39m Expected an error message"
+        echo "  Instead, got '$OUTPUT'"
         exit 1
     fi
     (echo $OUTPUT | grep "$3") > /dev/null
     if [[ $? != 0 ]]; then
-        echo "Expected error message '$3'"
-        echo "Instead, got '$OUTPUT'"
+        echo -e "\e[31m❌\e[39m Expected error message '$3'"
+        echo "  Instead, got '$OUTPUT'"
         exit 1
     fi
 
-    echo "Successfully tested: $1"
+    echo -e "\e[32m✓\e[39m Successfully tested: $1"
 }
 
 # First parameter: Test name
@@ -30,21 +30,21 @@ function expectError() {
 # Third parameter: JSON Path (as interpreted by jq)
 # Fourth parameter: Value expected
 function expectValue() {
-    echo "Running test: $1"
+    echo "  Running test: $1"
 
     OUTPUT=`jsonnet "$2" | jq "$3"`
     if [[ $? != 0 ]]; then
-        echo "Jsonnet returned an error code"
+        echo -e "\e[31m❌\e[39m Jsonnet returned an error code"
         exit 1
     fi
     (echo $OUTPUT | grep "$3") > /dev/null
     if [[ $OUTPUT != "$4" ]]; then
-        echo "Expected '$4'"
-        echo "Instead, got '$OUTPUT'"
+        echo "  Expected '$4'"
+        echo "  Instead, got '$OUTPUT'"
         exit 1
     fi
 
-    echo "Successfully tested: $1"
+    echo -e "\e[32mGreen✓\e[39mDefault Successfully tested: $1"
 }
 
 
