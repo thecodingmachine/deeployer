@@ -7,7 +7,7 @@ export JSONNET_PATH=../vendor/:../lib/
 # Second parameter: libsonnet test file
 # Third parameter: Expected error message
 function expectError() {
-    echo "  Running test: $1"
+    echo "  Running test:        $1"
 
     OUTPUT=`jsonnet "$2" 2>&1`
     if [[ $? == 0 ]]; then
@@ -30,7 +30,7 @@ function expectError() {
 # Third parameter: JSON Path (as interpreted by jq)
 # Fourth parameter: Value expected
 function expectValue() {
-    echo "  Running test: $1"
+    echo "  Running test:        $1"
 
     OUTPUT=`jsonnet "$2" | jq "$3"`
     if [[ $? != 0 ]]; then
@@ -44,9 +44,9 @@ function expectValue() {
         exit 1
     fi
 
-    echo -e "\e[32mGreen✓\e[39mDefault Successfully tested: $1"
+    echo -e "\e[32m✓\e[39m Successfully tested: $1"
 }
 
 
 expectError "Testing creation of host without a port" "host_without_port.jsonnet" "Can't create container by deployment without any port with deeployer"
-expectValue "Testing creation of ingress when a host is added" "host.jsonnet" "Can't create container by deployment without any port with deeployer"
+expectValue "Testing creation of ingress when a host is added" "host.jsonnet" ".generatedConf.php_myadmin.ingress.spec.rules[0].host" '"myhost.com"'
