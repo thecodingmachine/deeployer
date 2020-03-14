@@ -45,5 +45,5 @@ function expectValue() {
 }
 
 
-expectError "Testing creation of host without a port" "host_without_port.libsonnet" "Can't create container by deployment without any port with deeployer"
-expectValue "Testing creation of ingress when a host is added" "host.libsonnet" "Can't create container by deployment without any port with deeployer"
+expectError "Testing creation of host without a port" "host_without_port.jsonnet" "Can't create container by deployment without any port with deeployer"
+expectValue "Testing creation of ingress when a host is added" "host.jsonnet" "Can't create container by deployment without any port with deeployer"
