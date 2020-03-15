@@ -1,0 +1,41 @@
+# https://help.github.com/en/categories/automating-your-workflow-with-github-actions
+
+name: "Continuous Integration"
+
+on:
+  - "pull_request"
+  - "push"
+
+jobs:
+
+  continuous-integration:
+    name: "Continuous Integration"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2.0.0"
+
+      - name: "Download JSONNET"
+        run: |
+          curl -o jsonnet.tar.gz -L https://github.com/google/jsonnet/releases/download/v0.15.0/jsonnet-bin-v0.15.0-linux.tar.gz
+          tar xvzf jsonnet.tar.gz
+          chmod +x jsonnet
+          chmod +x jsonnetfmt
+          sudo mv jsonnet /usr/local/bin/jsonnet
+          sudo mv jsonnetfmt /usr/local/bin/jsonnetfmt
+          rm jsonnet.tar.gz
+
+      - name: "Download JB"
+        run: |
+          curl -o jb -L https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.3.1/jb-linux-amd64
+          chmod +x jb
+          sudo mv jb /usr/local/bin/jb
+          
+      - name: "Install dependencies"
+        run: jb install
+          
+      - name: "Run tests"
+        run: ./run_tests.sh
+        working-directory: "tests"
