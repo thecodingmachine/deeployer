@@ -11,5 +11,5 @@
         image: 'phpmyadmin',
       },
     },
-  })
+  }),
 }
