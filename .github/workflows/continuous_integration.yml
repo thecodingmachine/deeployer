@@ -39,3 +39,11 @@ jobs:
       - name: "Run tests"
         run: ./run_tests.sh
         working-directory: "tests"
+
+      - name: "Check coding style in deeployer lib"
+        run: jsonnetfmt --test *.*sonnet
+        working-directory: "lib/deeployer"
+
+      - name: "Check coding style in tests"
+        run: jsonnetfmt --test *.*sonnet
+        working-directory: "tests"

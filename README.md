@@ -5,6 +5,7 @@
 
 
 ## Contributing
+
 Download and install the Jsonnet Bundler: https://github.com/jsonnet-bundler/jsonnet-bundler/releases
 
 Install the dependencies:
@@ -14,3 +15,18 @@ $ jb install
 ```
 
 Download and install Tanka: https://github.com/grafana/tanka/releases
+
+Before submitting a PR:
+
+- run the tests:
+  ```console
+  cd tests/
+  ./run_tests.sh
+  ```
+- run the linter:
+  ```console
+  cd lib/deeployer
+  jsonnetfmt -i *.*sonnet
+  cd ../../tests
+  jsonnetfmt -i *.*sonnet
+  ```
