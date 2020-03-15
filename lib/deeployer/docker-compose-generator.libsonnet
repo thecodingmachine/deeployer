@@ -19,6 +19,14 @@
                 if hasHost(config.containers) then {
                   traefik: {
                     image: 'traefik:2',
+                    command: [
+                #       "--api.insecure=true",
+                #       "--api.dashboard=true",
+                        "--providers.docker",
+                        "--providers.docker.exposedByDefault=false"
+                    ],
+                    ports: [ "80:80" ],
+                    volumes: [ "/var/run/docker.sock:/var/run/docker.sock" ],
                   },
                 } else {},
     },
