@@ -39,9 +39,7 @@
                       (if std.objectHas(data, 'quotas') then
                          container.mixin.resources.withRequests(data.quotas.min).withLimits(data.quotas.max)
                        else {}),
-
-                    ],
-                    //podLabels=data.labels,
+                    ]
                   ) +
                   deployment.mixin.spec.strategy.withType('Recreate') +
                   deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName('tcmregistry')],),
