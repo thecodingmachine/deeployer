@@ -32,8 +32,8 @@
                          container.withEnv([env.new(key, data.env[key]) for key in std.objectFields(data.env)])
                        else {})
                       +
-                      (if std.objectHas(data, 'volumeMounts') then
-                         container.withVolumeMounts([volumeMount.new(volumeName, mountPath=data.volumeMounts[volumeName].mountPath, readOnly=false) for volumeName in std.objectFields(data.volumeMounts)])
+                      (if std.objectHas(data, 'volumes') then
+                         container.withVolumeMounts([volumeMount.new(volumeName, mountPath=data.volumes[volumeName].mountPath, readOnly=false) for volumeName in std.objectFields(data.volumes)])
                        else {})
                       +
                       (if std.objectHas(data, 'quotas') then
@@ -44,9 +44,9 @@
                   deployment.mixin.spec.strategy.withType('Recreate') +
                   deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName('tcmregistry')],),
 
-      //std.mapWithKey(fv, data.volumeMounts),
-    } + (if std.objectHas(data, 'volumeMounts') then {
-           deployment+: deployment.mixin.spec.template.spec.withVolumes([volume.fromPersistentVolumeClaim(volumeName, volumeName + '-pvc') for volumeName in std.objectFields(data.volumeMounts)]),
+      //std.mapWithKey(fv, data.volumes),
+    } + (if std.objectHas(data, 'volumes') then {
+           deployment+: deployment.mixin.spec.template.spec.withVolumes([volume.fromPersistentVolumeClaim(volumeName, volumeName + '-pvc') for volumeName in std.objectFields(data.volumes)]),
          } else {})
     + (
       if std.objectHas(data, 'ports') then
@@ -70,12 +70,12 @@
       else if std.length(data.ports) > 1 then error ' For service "' + deploymentName + "\", there is a host defined but several ports open. We don't support this case yet. "
       else if std.length(data.ports) == 0 then error ' There is no port defined for service "' + deploymentName + '"'
       else if std.objectHas(data, 'ports') then {}
-    ) + (if std.objectHas(data, 'volumeMounts') then {
+    ) + (if std.objectHas(data, 'volumes') then {
            pvcs: std.mapWithKey(function(pvcName, pvcData) { apiVersion: 'v1', kind: 'PersistentVolumeClaim' } +
                                                            pvc.mixin.metadata.withName(pvcName + '-pvc') +
                                                            pvc.mixin.spec.withAccessModes('ReadWriteOnce',) +
                                                            pvc.mixin.spec.resources.withRequests(['storage : ' + pvcData.diskSpace]),
-                                data.volumeMounts),
+                                data.volumes),
          } else {}),
 
 

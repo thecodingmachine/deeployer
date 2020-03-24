@@ -1,4 +1,4 @@
-{
+{  
     containers: {   
 
 
@@ -9,33 +9,17 @@
         ports: ["3306",],
         name: "mysql",
 
-        labels: {
-              'app' : 'mysql',
-              'database_type' : 'sql'
-        },
-
-        annotations: {},
-
         env: {
               APP_ENV : "dev"
-        },
-
-        envFrom: {
-              secretKeyRef: {
-                // Format 'secret_name' : 'key's_value_to_access' 
-                'Mysql-env-secrets' : 'MYSQL_ROOT_PASSWORD'
-              },
-              configMapKeyRef: {},
         },
 
         host : "ocs.test.thecodingmachine.com",
 
 
-        volumeMounts: {
+        volumes: {
               mysqldata: {
                 mountPath : '/var/lib/mysql',
-                diskSpace : {'Storage' : '4Gi'}  ,
-                persistent : 'yes',  // type 'no' if you don't need any pvc !
+                diskSpace : {'Storage' : '4Gi'}  
               },
           },
 
@@ -62,30 +46,15 @@
         image: "ocsinventory/ocsinventory-docker-image",
         ports: [9090],
         name: "ocsinventory",
-        persistent : 'yes',  // type 'no' if you don't need any pvc !
-
-        labels: {
-            'app' : 'ocs'
-        },
-
-        annotations: {},
 
         env: {
             'APP_ENV':'dev',
             'MAILER_FROM': 'no-reply@lrobin.test.thecodingmachine.com'
         },
 
-        envFrom: {
-            secretKeyRef: {
-                // Format 'secret_name' : 'key's_value_to_access' 
-                'Ocs-env-secrets' : 'AWS_SECRET_ACCESS_KEY'
-              },
-            configMapKeyRef: {},
-        },
-
         host: "ocsng.test.thecodingmachine.com",
    
-        volumeMounts: {
+        volumes: {
 
 
               'perlcomdata': {
@@ -138,14 +107,6 @@
         name : "php_my_9090admin",
         image: "phpmyadmin",
 
-        labels : {
-              'app' : 'phpmyadmin'
-        },
-
-        annotations: {
-          "kubernetes.io/ingress.global-static-ip-name": "web-static-ip"
-        },
-
         ports : [3307],
       
 
@@ -163,11 +124,10 @@
 
         //host: ''
 
-        volumeMounts: {
+        volumes: {
               'mysqldata': {
                 mountPath: '/var/lib/mysql',
                 diskSpace: '4Gi',
-                persistent : 'yes',  // type 'no' if you don't need any pvc !
               },
           },
 
