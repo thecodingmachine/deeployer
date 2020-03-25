@@ -1,0 +1,14 @@
+
+{
+    "$schema": "../../deeployer.schema.json",
+    "containers": {
+        "elasticsearch": {
+            "replicas": "1",
+            "ports": "",
+            
+            "env" : {
+                
+            }
+        }
+    }
+}

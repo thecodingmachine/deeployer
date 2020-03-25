@@ -1,18 +1,21 @@
 {
-    "$schema": "./deeployer.schema.json",
+    "$schema": "../../deeployer.schema.json",
     "containers": {
         "elasticsearch": {
             "image": "",
             "replicas": "1",
             "ports": "",
-            "name" : "",
             
-            
-            "env" : "",
+
+            "env" : {
+                "FOO": "BAR"
+            },
+
 
             "host": "",
 
             "volumes" : {},
+
 
             "quotas" : {
 
@@ -25,7 +28,6 @@
                     "cpu": "",
                     "memory": ""
                 }
-
 
             }
 

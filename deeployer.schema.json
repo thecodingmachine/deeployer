@@ -9,9 +9,6 @@
 					"type": "object",
 					"additionalProperties": false,
 					"properties": {
-						"name": {
-							"type": "string"
-						},
 						"replicas": {
 							"type": "string"
 						},
@@ -22,7 +19,7 @@
 							"type": "string"
 						},
 						"env": {
-							"type": "string"
+							"type": "object"
 						},
 						"host": {
 							"type": "string"
