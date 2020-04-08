@@ -2,11 +2,14 @@
     "$schema": "../../deeployer.schema.json",
     "containers": {
         "elasticsearch": {
-            "image": "",
-            "replicas": "1",
-            "ports": "",
             
-            "env" : " app : mysql "
+            "image": "image_name",
+            
+            "replicas": "1",
+            
+            "ports": [],
+            
+            "env" : "app : mysql"
                 
         }
     }

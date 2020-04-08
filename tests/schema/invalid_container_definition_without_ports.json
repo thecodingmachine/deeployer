@@ -3,12 +3,16 @@
     "containers": {
         "elasticsearch": {
             
-            "image": "",
-            "replicas": "1",
-            
-            "env" : {
-                
-            }
+            "image": "image_name",
+
+            "replicas": "1",       
+
+            "env" : {},
+
+
+            "ports": []
+
+
         }
     }
 }

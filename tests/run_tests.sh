@@ -24,3 +24,6 @@ ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_with
 ajv test -s ../deeployer.schema.json -d schema/invalid_container_with_wrong_declared_envVars.json --invalid
 ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_without_image.json --invalid
 ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_without_ports.json --invalid
+ajv test -s ../deeployer.schema.json -d schema/invalid_test_testing_envVars_with_a_specialObject.json --invalid
+ajv test -s ../deeployer.schema.json -d schema/invalid_test_testing_envVars_with_nonStringValue.json --invalid
+ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString.json --invalid
