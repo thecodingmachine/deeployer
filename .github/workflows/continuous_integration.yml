@@ -27,6 +27,12 @@ jobs:
           sudo mv jsonnetfmt /usr/local/bin/jsonnetfmt
           rm jsonnet.tar.gz
 
+      - name: "Install node and ajv "
+        uses: actions/setup-node@v1
+        with:
+         node-version: '12.14.0'
+        run: npm install ajv
+        
       - name: "Download JB"
         run: |
           curl -o jb -L https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.3.1/jb-linux-amd64
@@ -51,3 +57,5 @@ jobs:
       - name: "Check coding style in tests (2)"
         run: jsonnetfmt --test *.*sonnet
         working-directory: "tests/docker-compose-prod"
+
+

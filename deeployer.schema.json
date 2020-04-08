@@ -49,9 +49,11 @@
 								}
 							}
 						},
+
 						"quotas": {
 							"type": "object",
 							"properties": {
+								
 								"min": {
 									"type": "object",
 									"properties": {
@@ -64,6 +66,7 @@
 											"minLength": 1
 										}
 									},
+									
 									"max": {
 										"type": "string",
 										"properties": {
