@@ -57,6 +57,8 @@ fi
 # Get the directory of the script (resolving any symlink)
 DIR="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" >/dev/null 2>&1 && pwd -P )"
 
+config=$(cat "$DEEPLOYER_FILE")
+
 if [[ "$COMMAND" == "apply" ]]; then
   if [[ "$NAMESPACE" == "" ]]; then
     echo "When using 'apply', you must pass a namespace in paramater"
@@ -69,8 +71,10 @@ if [[ "$COMMAND" == "apply" ]]; then
 
   tk env set --namespace "$NAMESPACE" --server-from-context "$CONTEXT_NAME" "$DIR"
 
+  tk apply --extCode "config=$config" "$DIR"
+elif [[ "$COMMAND" == "show" ]]; then
+  # --dangerous-allow-redirect is needed for using the command in a Docker container
+  tk show --extCode "config=$config" "$DIR" --dangerous-allow-redirect
+else
+  tk $COMMAND --extCode "config=$config" "$DIR"
 fi
-
-config=$(cat "$DEEPLOYER_FILE")
-
-tk $COMMAND --extCode "config=$config" "$DIR"
