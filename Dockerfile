@@ -3,26 +3,24 @@ FROM thecodingmachine/k8s-gitlabci
 RUN mkdir /var/app
 
 
-RUN git clone https://github.com/grafana/tanka
-RUN cd tanka
-RUN make install
-RUN go get -u github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
+RUN curl -fSL -o "/usr/local/bin/tk" "https://github.com/grafana/tanka/releases/download/v0.9.0/tk-linux-amd64" && chmod a+x "/usr/local/bin/tk"
+RUN curl -fSL -o "/usr/local/bin/jb" "https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.3.1/jb-linux-amd64" && chmod a+x "/usr/local/bin/jb"
 
 
-RUN mkdir ~/tanka
-RUN cd ~/tanka
-RUN tk init
+COPY . /deeployer
 
-RUN mkdir ~/tanka/lib/deeployer
+RUN cd /deeployer && jb install
 
-COPY lib/deeployer/config.libsonnet  ~/tanka/lib/deeployer/config.libsonnet
+RUN ln -s /deeployer/scripts/deeployer-k8s /usr/local/bin/deeployer-k8s
 
-RUN cp /var/app/deeployer.libsonnet lib/deeployer/deeployer.libsonnet
+WORKDIR /var/app
 
-
-COPY Docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+#RUN cp /var/app/deeployer.libsonnet lib/deeployer/deeployer.libsonnet
 
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+#COPY Docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+
+#ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 

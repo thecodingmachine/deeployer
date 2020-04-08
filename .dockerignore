@@ -1,0 +1,6 @@
+/.github
+/Docker
+/environments
+/vendor
+/tests
+Dockerfile
