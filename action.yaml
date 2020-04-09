@@ -4,6 +4,9 @@ inputs:
   deeployerFile:
     description: 'Deeployer file (by default, Deeployer will look for a deeployer.libsonnet or deeployer.json file)'
     required: false
+  namespace:
+    description: 'Kubernetes namespace to deploy to'
+    required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -11,6 +14,8 @@ runs:
     - deeployer-k8s
     - apply
     - ${{ inputs.deeployerFile }}
+    - --namespace
+    - ${{ inputs.namespace }}
 
 branding:
   icon: 'cloud'
