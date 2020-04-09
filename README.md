@@ -46,6 +46,12 @@ Download and install Tanka: https://github.com/grafana/tanka/releases
 
 Download and install Kubeval: https://kubeval.instrumenta.dev/installation/
 
+Download and install AJV:
+
+```bash
+$ sudo npm install -g ajv-cli
+```
+
 Before submitting a PR:
 
 - run the tests:

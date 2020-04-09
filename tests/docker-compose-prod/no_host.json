@@ -1,0 +1,10 @@
+{
+    "containers": {
+      "php_myadmin": {
+        "image": "phpmyadmin"
+      },
+      "mysql": {
+        "image": "phpmyadmin"
+      },
+    }
+}

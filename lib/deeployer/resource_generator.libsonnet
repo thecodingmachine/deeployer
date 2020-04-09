@@ -15,6 +15,7 @@
   local volume = $.apps.v1.deployment.mixin.spec.template.spec.volumesType,
   local pvc = $.core.v1.persistentVolumeClaim,
   local resources = $.core.v1.container.resourcesType,
+  local httpIngressPath = ingressRule.mixin.http.pathsType,
 
   local f = function(deploymentName, data)
     {
@@ -57,10 +58,14 @@
                       ingress.mixin.metadata.withName('ingress-' + deploymentName) +
                       //ingress.mixin.metadata.withLabels(data.labels)+
                       //ingress.mixin.metadata.withAnnotations(data.annotations)+
-                      ingress.mixin.spec.backend.withServiceName('ingress-' + deploymentName + '-service').withServicePort([containerPort.new('p' + port, port) for port in data.ports],) +
+
                       ingress.mixin.spec.withRules([ingressRule.new() +
                                                     ingressRule.withHost(data.host) +
-                                                    ingressRule.mixin.http.withPaths('/')],),
+                                                    ingressRule.mixin.http.withPaths(
+                                                        httpIngressPath.new() +
+                                                        httpIngressPath.mixin.backend.withServiceName('ingress-' + deploymentName + '-service') +
+                                                        httpIngressPath.mixin.backend.withServicePort('p'+data.ports[0])
+                                                    )],),
            }
 
          else { service: $.util.serviceFor(self.deployment) })

@@ -28,9 +28,10 @@ function expectError() {
 }
 
 # First parameter: Test name
-# Second parameter: libsonnet test file
+# Second parameter: json test file
 # Third parameter: JSON Path (as interpreted by jq)
 # Fourth parameter: Value expected
+# Fifth parameter: The test script to lanch (K8S or docker-compose)
 function expectValue() {
     set +e
 
@@ -41,7 +42,7 @@ function expectValue() {
 
     config=$(cat "$2")
 
-    OUTPUT=$(jsonnet ../scripts/main.jsonnet --ext-code config="$config" | jq "$3")
+    OUTPUT=$(jsonnet $5 --ext-code config="$config" | jq "$3")
     if [[ $? != 0 ]]; then
         echo -e "\e[31m❌\e[39m Jsonnet returned an error code"
         set -e
