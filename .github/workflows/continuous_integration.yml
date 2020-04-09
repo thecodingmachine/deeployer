@@ -32,9 +32,8 @@ jobs:
         with:
           node-version: '12.14.0'
  
-
       - name: "Install ajv"
-        run: npm install -g ajv
+        run: npm install -g ajv-cli
 
       - name: "Download JB"
         run: |
