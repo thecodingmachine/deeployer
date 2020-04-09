@@ -72,6 +72,9 @@ if [[ "$COMMAND" == "apply" ]]; then
 
   tk env set --namespace "$NAMESPACE" --server-from-context "$CONTEXT_NAME" "$DIR"
 
+  # Let's create the namespace if it does not exists
+  kubectl create namespace "$NAMESPACE" || true
+
   tk apply --extCode "config=$config" "$DIR"
 elif [[ "$COMMAND" == "show" ]]; then
   # --dangerous-allow-redirect is needed for using the command in a Docker container
