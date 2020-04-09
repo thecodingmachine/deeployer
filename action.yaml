@@ -1,0 +1,17 @@
+name: 'Deeployer'
+description: 'Deploy your application using Deeployer'
+inputs:
+  deeployerFile:
+    description: 'Deeployer file (by default, Deeployer will look for a deeployer.libsonnet or deeployer.json file)'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - deeployer-k8s
+    - apply
+    - ${{ inputs.deeployerFile }}
+
+branding:
+  icon: 'cloud'
+  color: 'green'
