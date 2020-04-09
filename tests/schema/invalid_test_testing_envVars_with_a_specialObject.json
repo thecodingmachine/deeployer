@@ -2,12 +2,7 @@
     "$schema": "../../deeployer.schema.json",
     "containers": {
         "elasticsearch": {
-
-            "image": "",
-
-            "replicas": 1,
-            "ports": [],
-            
+            "image": "image_name",
             "env" : {
                 "FOO": { 
                     "SOME": "SUBOBJECT"

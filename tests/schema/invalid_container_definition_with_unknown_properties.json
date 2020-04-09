@@ -2,13 +2,8 @@
     "$schema": "../../deeployer.schema.json",
     "containers": {
         "elasticsearch": {
-            "image":"",
-            "foobar": "",
-            "name" : "",
-            "image": "",
-            "replicas": 1,
-            "ports": ""
-            
+            "image": "image_name",
+            "foobar": ""
         }
     }
 }

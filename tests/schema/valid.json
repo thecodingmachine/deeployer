@@ -5,7 +5,8 @@
             
             "image": "image_name",
             
-            "replicas": 1,
+            "replicas": 
+            1,
 
             "ports": [80],
             
@@ -28,8 +29,8 @@
                 },
 
                 "max": {
-                    "cpu": "",
-                    "memory": ""
+                    "cpu": "2",
+                    "memory": "1"
                 }
 
             }

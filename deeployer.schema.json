@@ -20,7 +20,9 @@
 							"type": "array"
 						},
 						"env": {
-							"type": "object"	
+							"type": "object",
+							"additionalProperties": { "type": "string" }
+
 						},
 
 						"host": {
@@ -62,10 +64,12 @@
 											"type": "string",
 											"minLength": 1
 										}
-									},
+									}
 									
-									"max": {
-										"type": "string",
+								},
+								
+								"max": {
+										"type": "object",
 										"properties": {
 											"cpu": {
 												"type": "string",
@@ -77,7 +81,7 @@
 											}
 										}
 									}
-								}
+								
 							}
 						}
 					},

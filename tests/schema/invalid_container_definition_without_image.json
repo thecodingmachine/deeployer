@@ -4,14 +4,6 @@
     "containers": {
         "elasticsearch": {
 
-
-            "replicas": 1,
-            
-            "ports": [80],
-            
-            "env" : {
-            }
-            
         }
     }
 }
