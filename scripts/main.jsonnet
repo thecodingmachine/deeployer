@@ -3,7 +3,7 @@
 (import "deeployer/resource_generator.libsonnet")+
 
 {
-local config = import '../../deeployer.libsonnet',
+local config = std.extVar('config'),
 local deeployer = $.deeployer,
 
 

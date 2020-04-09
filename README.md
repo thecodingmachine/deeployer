@@ -13,6 +13,24 @@ It aims to automate a number of processes, including easy backup setup, easy rev
 
 
 
+## Installing locally
+
+Deeployer can be run via Docker. Installation is as easy as adding a few aliases to your `~/.bashrc` (if you are using Bash)
+
+`~/.bashrc`
+```
+alias deeployer-k8s="docker run --rm -it -v $(pwd):/var/app thecodingmachine/deeployer:latest deeployer-k8s"
+alias deeployer-self-update="docker pull thecodingmachine/deeployer:latest"
+
+```
+
+Deeployer is under heavy development. Do not forget to update the Docker image regularly:
+
+```console
+$ deeployer-self-update
+```
+
+
 
 ## Contributing
 

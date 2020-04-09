@@ -23,6 +23,7 @@ fi
 
 if [ "$1" == "" ]; then
   usage
+  exit 1
 fi
 
 COMMAND="$1"
@@ -47,11 +48,11 @@ done
 
 if [[ "$DEEPLOYER_FILE" == "" ]]; then
   echo "Cannot find deeployer.libsonnet or deeployer.json in the current directory. Create those files or pass the name of the deeployer configuration file in argument to deeployer-k8s."
-  exit;
+  exit 1;
 fi
 if [ ! -f "$DEEPLOYER_FILE" ]; then
   echo "Cannot find deeployer configuration file \"$DEEPLOYER_FILE\""
-  exit;
+  exit 1;
 fi
 
 # Get the directory of the script (resolving any symlink)
@@ -63,13 +64,16 @@ if [[ "$COMMAND" == "apply" ]]; then
   if [[ "$NAMESPACE" == "" ]]; then
     echo "When using 'apply', you must pass a namespace in paramater"
     echo "  deeployer-k8s apply --namespace foobar"
-    exit;
+    exit 1;
   fi
 
   # Let's get the current cluster
   CONTEXT_NAME=$(kubectl config current-context)
 
   tk env set --namespace "$NAMESPACE" --server-from-context "$CONTEXT_NAME" "$DIR"
+
+  # Let's create the namespace if it does not exists
+  kubectl create namespace "$NAMESPACE" || true
 
   tk apply --extCode "config=$config" "$DIR"
 elif [[ "$COMMAND" == "show" ]]; then
