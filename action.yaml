@@ -1,4 +1,4 @@
-name: 'Deeployer'
+name: 'Deploy with Deeployer'
 description: 'Deploy your application using Deeployer'
 inputs:
   deeployerFile:
