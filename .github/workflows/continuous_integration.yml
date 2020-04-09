@@ -27,11 +27,22 @@ jobs:
           sudo mv jsonnetfmt /usr/local/bin/jsonnetfmt
           rm jsonnet.tar.gz
 
+      - name: "Install Tanka"
+        run: |
+          sudo curl -fSL -o "/usr/local/bin/tk" "https://github.com/grafana/tanka/releases/download/v0.9.0/tk-linux-amd64"
+          sudo chmod a+x "/usr/local/bin/tk"
+
+      - name: "Install Kubeval"
+        run: |
+          curl -fSL -o kubeval-linux-amd64.tar.gz https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+          tar xf kubeval-linux-amd64.tar.gz
+          sudo cp kubeval /usr/local/bin
+
       - name: "Install node"
         uses: actions/setup-node@v1
         with:
           node-version: '12.14.0'
- 
+
       - name: "Install ajv"
         run: npm install -g ajv-cli
 
@@ -51,13 +62,4 @@ jobs:
       - name: "Check coding style in deeployer lib"
         run: jsonnetfmt --test *.*sonnet
         working-directory: "lib/deeployer"
-
-      - name: "Check coding style in tests"
-        run: jsonnetfmt --test *.*sonnet
-        working-directory: "tests"
-
-      - name: "Check coding style in tests (2)"
-        run: jsonnetfmt --test *.*sonnet
-        working-directory: "tests/docker-compose-prod"
-
 
