@@ -63,8 +63,8 @@
                                                     ingressRule.withHost(data.host) +
                                                     ingressRule.mixin.http.withPaths(
                                                       httpIngressPath.new() +
-                                                      httpIngressPath.mixin.backend.withServiceName('ingress-' + deploymentName + '-service') +
-                                                      httpIngressPath.mixin.backend.withServicePort('p' + data.ports[0])
+                                                      httpIngressPath.mixin.backend.withServiceName(deploymentName) +
+                                                      httpIngressPath.mixin.backend.withServicePort(data.ports[0])
                                                     )],),
            }
 
