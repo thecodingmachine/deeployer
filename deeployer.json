@@ -1,8 +1,38 @@
 {
     "$schema": "./deeployer.schema.json",
     "containers": {
-        "mysql": {
-            "image": "toto"
+        "elasticsearch": {
+            "image": "",
+            "replicas": "1",
+            "ports": "",
+            "name" : "",
+            
+            
+            "env" : "",
+
+            "host": "",
+
+            "volumes" : {},
+
+            "quotas" : {
+
+                "min": {
+                    "cpu": "",
+                    "memory" : ""
+                },
+
+                "max": {
+                    "cpu": "",
+                    "memory": ""
+                }
+
+
+            }
+
+
+
+
+
         }
     }
 }

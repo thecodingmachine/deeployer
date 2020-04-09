@@ -1,0 +1,9 @@
+
+{
+    "$schema": "../../deeployer.schema.json",
+    "containers": {
+        "elasticsearch": {
+
+        }
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "$schema": "../../deeployer.schema.json",
+    "containers": {
+        "elasticsearch": {
+           
+            "image": "",
+
+            "quotas" : {
+
+                "min": {
+
+                    "memory" : ""
+                }
+
+            }
+        }
+    }
+}
