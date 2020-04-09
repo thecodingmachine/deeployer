@@ -5,7 +5,7 @@
             
             "image": "image_name",
             
-            "replicas": "1",
+            "replicas": 1,
 
             "ports": [80],
             
