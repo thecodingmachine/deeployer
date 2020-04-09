@@ -1,0 +1,80 @@
+#!/bin/bash
+
+set -e
+
+usage()
+{
+    echo "usage: deeployer-k8s show [deeployer.json] | [-h]]"
+    echo "       deeployer-k8s apply [--namespace somenamespace] [deeployer.json] | [-h]]"
+}
+
+NAMESPACE=
+
+# DEEPLOYER_FILE contains ./deeployer.libsonnet (if this file exists), or ./deeployer.json (if this file exists) or empty
+DEEPLOYER_FILE=./deeployer.libsonnet
+DEEPLOYER_FILE_SPECIFIED=0
+
+if [ ! -f "$DEEPLOYER_FILE" ]; then
+  DEEPLOYER_FILE=./deeployer.json
+  if [ ! -f "$DEEPLOYER_FILE" ]; then
+    DEEPLOYER_FILE=
+  fi
+fi
+
+if [ "$1" == "" ]; then
+  usage
+fi
+
+COMMAND="$1"
+shift
+
+# See http://linuxcommand.org/lc3_wss0120.php for explanation
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -n | --namespace )      shift
+                                NAMESPACE=$1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     if [ "$DEEPLOYER_FILE_SPECIFIED" == "1" ]; then usage; exit; fi;
+                                DEEPLOYER_FILE_SPECIFIED=1
+                                DEEPLOYER_FILE=$1
+    esac
+    shift
+done
+
+if [[ "$DEEPLOYER_FILE" == "" ]]; then
+  echo "Cannot find deeployer.libsonnet or deeployer.json in the current directory. Create those files or pass the name of the deeployer configuration file in argument to deeployer-k8s."
+  exit;
+fi
+if [ ! -f "$DEEPLOYER_FILE" ]; then
+  echo "Cannot find deeployer configuration file \"$DEEPLOYER_FILE\""
+  exit;
+fi
+
+# Get the directory of the script (resolving any symlink)
+DIR="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" >/dev/null 2>&1 && pwd -P )"
+
+config=$(cat "$DEEPLOYER_FILE")
+
+if [[ "$COMMAND" == "apply" ]]; then
+  if [[ "$NAMESPACE" == "" ]]; then
+    echo "When using 'apply', you must pass a namespace in paramater"
+    echo "  deeployer-k8s apply --namespace foobar"
+    exit;
+  fi
+
+  # Let's get the current cluster
+  CONTEXT_NAME=$(kubectl config current-context)
+
+  tk env set --namespace "$NAMESPACE" --server-from-context "$CONTEXT_NAME" "$DIR"
+
+  tk apply --extCode "config=$config" "$DIR"
+elif [[ "$COMMAND" == "show" ]]; then
+  # --dangerous-allow-redirect is needed for using the command in a Docker container
+  tk show --extCode "config=$config" "$DIR" --dangerous-allow-redirect
+else
+  tk $COMMAND --extCode "config=$config" "$DIR"
+fi

@@ -40,10 +40,10 @@ jobs:
           curl -o jb -L https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.3.1/jb-linux-amd64
           chmod +x jb
           sudo mv jb /usr/local/bin/jb
-          
+
       - name: "Install dependencies"
         run: jb install
-          
+
       - name: "Run tests"
         run: ./run_tests.sh
         working-directory: "tests"
