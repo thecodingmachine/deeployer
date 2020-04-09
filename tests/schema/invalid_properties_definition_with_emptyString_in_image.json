@@ -2,7 +2,6 @@
     "$schema": "../../deeployer.schema.json",
     "containers": {
         "elasticsearch": {
-           
             "image": ""
         }
     }

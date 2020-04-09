@@ -2,43 +2,27 @@
     "$schema": "../../deeployer.schema.json",
     "containers": {
         "elasticsearch": {
-            
-            "image": "image_name",
-            
-            "replicas": 
-            1,
-
-            "ports": [80],
-            
-
-            "env" : {
+            "env": {
                 "FOO": "BAR"
             },
-
-
             "host": "test@thecodingmachine.com",
-
-            "volumes" : {},
-
-
-            "quotas" : {
-
-                "min": {
-                    "cpu": "2",
-                    "memory" : "1"
-                },
-
+            "image": "image_name",
+            "ports": [
+                80
+            ],
+            "quotas": {
                 "max": {
                     "cpu": "2",
                     "memory": "1"
+                },
+                "min": {
+                    "cpu": "2",
+                    "memory": "1"
                 }
-
+            },
+            "replicas": 1,
+            "volumes": {
             }
-
-
-
-
-
         }
     }
 }
