@@ -1,4 +1,4 @@
-FROM thecodingmachine/k8s_gitlabci:2.0
+FROM thecodingmachine/k8s_gitlabci:2.0.1
 
 RUN mkdir /var/app
 
