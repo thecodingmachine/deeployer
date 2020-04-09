@@ -1,0 +1,12 @@
+{
+    "$schema": "../../deeployer.schema.json",
+    "containers": {
+        "elasticsearch": {
+            "image": "image_name",
+            "env": {
+                "FOO": 42
+              }
+                
+        }
+    }
+}

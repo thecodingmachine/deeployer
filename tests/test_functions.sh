@@ -2,11 +2,11 @@
 
 export JSONNET_PATH=../vendor/:../lib/
 
-
 # First parameter: Test name
 # Second parameter: libsonnet test file
 # Third parameter: Expected error message
 function expectError() {
+    set +e
     echo "  Running test:        $1"
 
     OUTPUT=`jsonnet "$2" 2>&1`
@@ -30,12 +30,16 @@ function expectError() {
 # Third parameter: JSON Path (as interpreted by jq)
 # Fourth parameter: Value expected
 function expectValue() {
+    set +e
+
+
     echo "  Running test:        $1"
 
     set -o pipefail
     OUTPUT=`jsonnet "$2" | jq "$3"`
     if [[ $? != 0 ]]; then
         echo -e "\e[31m❌\e[39m Jsonnet returned an error code"
+        set -e
         exit 1
     fi
     set +o pipefail
@@ -43,8 +47,10 @@ function expectValue() {
     if [[ $OUTPUT != "$4" ]]; then
         echo -e "\e[31m❌\e[39m Expected '$4'"
         echo "  Instead, got '$OUTPUT'"
+        set -e
         exit 1
     fi
 
     echo -e "\e[32m✓\e[39m Successfully tested: $1"
+    set -e
 }
