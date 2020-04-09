@@ -44,6 +44,8 @@ $ jb install
 
 Download and install Tanka: https://github.com/grafana/tanka/releases
 
+Download and install Kubeval: https://kubeval.instrumenta.dev/installation/
+
 Before submitting a PR:
 
 - run the tests:

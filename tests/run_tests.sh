@@ -7,8 +7,9 @@ set -e
 # Kubernetes tests
 echo "Starting Kubernetes tests"
 
-expectError "Testing creation of host without a port" "host_without_port.jsonnet" "Can't create container by deployment without any port with deeployer"
-expectValue "Testing creation of ingress when a host is added" "host.jsonnet" ".generatedConf.php_myadmin.ingress.spec.rules[0].host" '"myhost.com"'
+expectError "Testing creation of host without a port" "host_without_port.json" "Can't create container by deployment without any port with deeployer"
+expectValue "Testing creation of ingress when a host is added" "host.json" ".generatedConf.php_myadmin.ingress.spec.rules[0].host" '"myhost.com"'
+assertValidK8s "host.json"
 
 # Docker-compose tests
 echo "Starting docker-compose tests"

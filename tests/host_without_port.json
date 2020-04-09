@@ -1,0 +1,9 @@
+{
+  "containers": {
+    "php_myadmin": {
+      "image": "phpmyadmin",
+
+      "host": "myhost.com"
+    }
+  }
+}

@@ -9,7 +9,9 @@ function expectError() {
     set +e
     echo "  Running test:        $1"
 
-    OUTPUT=`jsonnet "$2" 2>&1`
+    config=$(cat "$2")
+
+    OUTPUT=$(jsonnet ../scripts/main.jsonnet --ext-code config="$config" 2>&1)
     if [[ $? == 0 ]]; then
         echo -e "\e[31m❌\e[39m Expected an error message"
         echo "  Instead, got '$OUTPUT'"
@@ -36,7 +38,10 @@ function expectValue() {
     echo "  Running test:        $1"
 
     set -o pipefail
-    OUTPUT=`jsonnet "$2" | jq "$3"`
+
+    config=$(cat "$2")
+
+    OUTPUT=$(jsonnet ../scripts/main.jsonnet --ext-code config="$config" | jq "$3")
     if [[ $? != 0 ]]; then
         echo -e "\e[31m❌\e[39m Jsonnet returned an error code"
         set -e
@@ -52,5 +57,34 @@ function expectValue() {
     fi
 
     echo -e "\e[32m✓\e[39m Successfully tested: $1"
+    set -e
+}
+
+# Asserts that generated configuration file is a valid Kubernetes deployment
+# First parameter: libsonnet test file
+function assertValidK8s() {
+    set +e
+
+
+    echo "  Testing K8S validity for: $1"
+
+    set -o pipefail
+    OUTPUT=$(../scripts/deeployer-k8s show "$1" | kubeval)
+    if [[ $? != 0 ]]; then
+        echo -e "\e[31m❌\e[39m Kubeval returned an error code"
+        echo ""
+        echo "  Tanka output:"
+        echo ""
+        ../scripts/deeployer-k8s show "$1"
+        echo ""
+        echo "  Kubeval error message:"
+        echo ""
+        echo "$OUTPUT"
+        set -e
+        exit 1
+    fi
+    set +o pipefail
+
+    echo -e "\e[32m✓\e[39m Successfully tested K8S validity for $1"
     set -e
 }

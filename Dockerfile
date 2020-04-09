@@ -24,4 +24,3 @@ WORKDIR /var/app
 
 #ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-
