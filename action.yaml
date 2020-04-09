@@ -13,9 +13,9 @@ runs:
   args:
     - deeployer-k8s
     - apply
-    - ${{ inputs.deeployerFile }}
-    - --namespace
+    - "--namespace"
     - ${{ inputs.namespace }}
+    - ${{ inputs.deeployerFile }}
 
 branding:
   icon: 'cloud'
