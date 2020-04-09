@@ -10,7 +10,7 @@
 					"additionalProperties": false,
 					"properties": {
 						"replicas": {
-							"type": "integer",
+							"type": "integer"
 						},
 						"image": {
 							"type": "string",
