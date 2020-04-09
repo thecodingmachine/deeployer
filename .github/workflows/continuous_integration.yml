@@ -63,12 +63,3 @@ jobs:
         run: jsonnetfmt --test *.*sonnet
         working-directory: "lib/deeployer"
 
-      - name: "Check coding style in tests"
-        run: jsonnetfmt --test *.*sonnet
-        working-directory: "tests"
-
-      - name: "Check coding style in tests (2)"
-        run: jsonnetfmt --test *.*sonnet
-        working-directory: "tests/docker-compose-prod"
-
-
