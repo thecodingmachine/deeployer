@@ -17,6 +17,11 @@ It aims to automate a number of processes, including easy backup setup, easy rev
 
 ## Installing locally
 
+In order to use Deeployer locally, you need to install:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [jq](https://stedolan.github.io/jq/download/)
+
 Deeployer can be run via Docker. Installation is as easy as adding a few aliases to your `~/.bashrc` (if you are using Bash)
 
 `~/.bashrc`
