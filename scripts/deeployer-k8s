@@ -8,6 +8,11 @@ usage()
     echo "       deeployer-k8s apply [--namespace somenamespace] [deeployer.json] | [-h]]"
 }
 
+# Running this at the very beginning, before we declare any environment variable
+if [[ "$JSON_ENV" == "" ]]; then
+  JSON_ENV=$(jq -n env)
+fi
+
 NAMESPACE=
 
 # DEEPLOYER_FILE contains ./deeployer.libsonnet (if this file exists), or ./deeployer.json (if this file exists) or empty
@@ -75,10 +80,10 @@ if [[ "$COMMAND" == "apply" ]]; then
   # Let's create the namespace if it does not exists
   kubectl create namespace "$NAMESPACE" || true
 
-  tk apply --extCode "config=$config" "$DIR"
+  tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" "$DIR"
 elif [[ "$COMMAND" == "show" ]]; then
   # --dangerous-allow-redirect is needed for using the command in a Docker container
-  tk show --extCode "config=$config" "$DIR" --dangerous-allow-redirect
+  tk show --extCode "config=$config" --extCode "env=$JSON_ENV" "$DIR" --dangerous-allow-redirect
 else
   tk $COMMAND --extCode "config=$config" "$DIR"
 fi
