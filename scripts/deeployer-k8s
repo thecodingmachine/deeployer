@@ -80,7 +80,7 @@ if [[ "$COMMAND" == "apply" ]]; then
   # Let's create the namespace if it does not exists
   kubectl create namespace "$NAMESPACE" || true
 
-  tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" "$DIR"
+  tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" --dangerous-auto-approve "$DIR"
 elif [[ "$COMMAND" == "show" ]]; then
   # --dangerous-allow-redirect is needed for using the command in a Docker container
   tk show --extCode "config=$config" --extCode "env=$JSON_ENV" "$DIR" --dangerous-allow-redirect
