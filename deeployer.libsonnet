@@ -1,5 +1,6 @@
-{  
-    containers: {   
+{
+    local env = std.extVar("env"),
+    containers: {
 
 
       //Pod1
@@ -13,13 +14,13 @@
               APP_ENV : "dev"
         },
 
-        host : "ocs.test.thecodingmachine.com",
+        host : env.NAMESPACE+".test.thecodingmachine.com",
 
 
         volumes: {
               mysqldata: {
                 mountPath : '/var/lib/mysql',
-                diskSpace : {'Storage' : '4Gi'}  
+                diskSpace : {'Storage' : '4Gi'}
               },
           },
 
@@ -37,7 +38,7 @@
 
       },
 
-        
+
 
       // Pod2
       ocs_inventory: {
@@ -53,7 +54,7 @@
         },
 
         host: "ocsng.test.thecodingmachine.com",
-   
+
         volumes: {
 
 
@@ -77,8 +78,8 @@
                 mountPath: '/var/lib/mysql',
                 diskSpace: '4Gi',
               },
-         
-         
+
+
           },
 
 
@@ -93,10 +94,10 @@
             }
           }
 
-      
-      
-      
-      
+
+
+
+
       },
 
 
@@ -108,7 +109,7 @@
         image: "phpmyadmin",
 
         ports : [3307],
-      
+
 
         env: {
               "APP_ENV" : "dev"
@@ -116,7 +117,7 @@
 
         envFrom: {
               secretKeyRef: {
-                // Format 'secret_name' : 'key's_value_to_access' 
+                // Format 'secret_name' : 'key's_value_to_access'
                 'Mysql-env-secrets' : 'MYSQL_ROOT_PASSWORD'
               },
               configMapKeyRef: {},
@@ -143,9 +144,9 @@
           }
       }
 
-      
+
       },
 
       //Pod4 ...
-  
+
 }
