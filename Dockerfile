@@ -1,4 +1,4 @@
-FROM thecodingmachine/k8s_gitlabci:2.0.3
+FROM thecodingmachine/k8s_gitlabci:2.0.4
 
 ENV SILENT_WARNINGS=1
 RUN mkdir /var/app
