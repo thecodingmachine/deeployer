@@ -11,8 +11,18 @@ that do not necessarily master the intricacies of Kubernetes.
 
 It aims to automate a number of processes, including easy backup setup, easy reverse proxy declaration, etc...
 
+## The Deeployer config file
+
+TODO
+
+## Using Jsonnet
+
+TODO: explain how to create variants of the main file (for instance a dev environment with PHPMyAdmin)
 
 
+## Referencing environment variables in the Deeployer config file
+
+TODO
 
 
 ## Installing locally
@@ -36,7 +46,13 @@ Deeployer is under heavy development. Do not forget to update the Docker image r
 $ deeployer-self-update
 ```
 
+## Usage in Gitlab CI
 
+TODO
+
+## Usage in Github actions
+
+TODO
 
 ## Contributing
 
