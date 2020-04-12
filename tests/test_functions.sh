@@ -11,7 +11,7 @@ function expectError() {
 
     config=$(cat "$2")
 
-    OUTPUT=$(jsonnet ../scripts/main.jsonnet --ext-code config="$config" 2>&1)
+    OUTPUT=$(jsonnet ../scripts/main.jsonnet --ext-code config="$config" --ext-str timestamp="2020-05-05 00:00:00" 2>&1)
     if [[ $? == 0 ]]; then
         echo -e "\e[31m❌\e[39m Expected an error message"
         echo "  Instead, got '$OUTPUT'"
@@ -42,7 +42,7 @@ function expectValue() {
 
     config=$(cat "$2")
 
-    OUTPUT=$(jsonnet $5 --ext-code config="$config" | jq "$3")
+    OUTPUT=$(jsonnet $5 --ext-code config="$config" --ext-str timestamp="2020-05-05 00:00:00" | jq "$3")
     if [[ $? != 0 ]]; then
         echo -e "\e[31m❌\e[39m Jsonnet returned an error code"
         set -e

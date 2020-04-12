@@ -65,6 +65,8 @@ DIR="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" >/dev/null 2>&1 && pwd
 
 config=$(cat "$DEEPLOYER_FILE")
 
+TIMESTAMP=$(date --rfc-3339=seconds)
+
 if [[ "$COMMAND" == "apply" ]]; then
   if [[ "$NAMESPACE" == "" ]]; then
     echo "When using 'apply', you must pass a namespace in paramater"
@@ -80,10 +82,10 @@ if [[ "$COMMAND" == "apply" ]]; then
   # Let's create the namespace if it does not exists
   kubectl create namespace "$NAMESPACE" || true
 
-  tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" --dangerous-auto-approve "$DIR"
+  tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" --dangerous-auto-approve "$DIR"
 elif [[ "$COMMAND" == "show" ]]; then
   # --dangerous-allow-redirect is needed for using the command in a Docker container
-  tk show --extCode "config=$config" --extCode "env=$JSON_ENV" "$DIR" --dangerous-allow-redirect
+  tk show --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" "$DIR" --dangerous-allow-redirect
 else
-  tk $COMMAND --extCode "config=$config" "$DIR"
+  tk $COMMAND --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" "$DIR"
 fi
