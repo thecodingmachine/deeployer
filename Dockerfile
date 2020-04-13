@@ -1,4 +1,4 @@
-FROM thecodingmachine/k8s_gitlabci:2.0.2
+FROM thecodingmachine/k8s_gitlabci:2.0.5
 
 ENV SILENT_WARNINGS=1
 RUN mkdir /var/app
@@ -6,7 +6,7 @@ RUN mkdir /var/app
 
 RUN curl -fSL -o "/usr/local/bin/tk" "https://github.com/grafana/tanka/releases/download/v0.9.0/tk-linux-amd64" && chmod a+x "/usr/local/bin/tk"
 RUN curl -fSL -o "/usr/local/bin/jb" "https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.3.1/jb-linux-amd64" && chmod a+x "/usr/local/bin/jb"
-
+RUN apt-get update && apt-get install -y --no-install-recommends jq
 
 COPY . /deeployer
 

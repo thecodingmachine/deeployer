@@ -11,17 +11,33 @@ that do not necessarily master the intricacies of Kubernetes.
 
 It aims to automate a number of processes, including easy backup setup, easy reverse proxy declaration, etc...
 
+## The Deeployer config file
+
+TODO
+
+## Using Jsonnet
+
+TODO: explain how to create variants of the main file (for instance a dev environment with PHPMyAdmin)
+
+
+## Referencing environment variables in the Deeployer config file
+
+TODO
 
 
 ## Installing locally
 
+In order to use Deeployer locally, you need to install:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [jq](https://stedolan.github.io/jq/download/)
+
 Deeployer can be run via Docker. Installation is as easy as adding a few aliases to your `~/.bashrc` (if you are using Bash)
 
 `~/.bashrc`
-```
-alias deeployer-k8s="docker run --rm -it -v $(pwd):/var/app thecodingmachine/deeployer:latest deeployer-k8s"
+```console
+alias deeployer-k8s="docker run --rm -it -e \"JSON_ENV=\$(jq -n env)\" -v $(pwd):/var/app thecodingmachine/deeployer:latest deeployer-k8s"
 alias deeployer-self-update="docker pull thecodingmachine/deeployer:latest"
-
 ```
 
 Deeployer is under heavy development. Do not forget to update the Docker image regularly:
@@ -30,7 +46,13 @@ Deeployer is under heavy development. Do not forget to update the Docker image r
 $ deeployer-self-update
 ```
 
+## Usage in Gitlab CI
 
+TODO
+
+## Usage in Github actions
+
+TODO
 
 ## Contributing
 

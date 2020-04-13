@@ -1,6 +1,10 @@
 {
   containers: {
 
+    local env = std.extVar("env"),
+    containers: {
+
+
 
     //Pod1
     mysql: {
@@ -23,7 +27,6 @@
         },
       },
 
-
       quotas: {
         min: {
           cpu: '100m',
@@ -35,7 +38,17 @@
         },
       },
 
+        host : env.NAMESPACE+".test.thecodingmachine.com",
+
+
     },
+
+        volumes: {
+              mysqldata: {
+                mountPath : '/var/lib/mysql',
+                diskSpace : {'Storage' : '4Gi'}
+              },
+          },
 
 
     // Pod2
@@ -51,7 +64,9 @@
         MAILER_FROM: 'no-reply@lrobin.test.thecodingmachine.com',
       },
 
+
       host: 'ocsng.test.thecodingmachine.com',
+
 
       volumes: {
 
@@ -76,6 +91,50 @@
           mountPath: '/var/lib/mysql',
           diskSpace: '4Gi',
         },
+
+
+        host: "ocsng.test.thecodingmachine.com",
+
+        volumes: {
+
+
+              'perlcomdata': {
+                mountPath: '/etc/ocsinventory-server',
+                diskSpace: '4Gi',
+              },
+              'extensiondata': {
+                mountPath: '/usr/share/ocsinventory-reports/ocsreports/extensions',
+                diskSpace: '4Gi',
+              },
+              'varlibdata': {
+                mountPath: '/var/lib/ocsinventory-reports',
+                diskSpace: '4Gi',
+              },
+              'httpdata': {
+                mountPath: '/etc/httpd/conf.d',
+                diskSpace: '4Gi',
+              },
+              'mysqldata': {
+                mountPath: '/var/lib/mysql',
+                diskSpace: '4Gi',
+              },
+
+
+          },
+
+
+        quotas: {
+          min: {
+            "cpu": "100m",
+            "memory": "64M"
+          },
+          max: {
+            "cpu": "1",
+            "memory": "1G"
+            }
+          }
+
+
 
 
       },
@@ -103,6 +162,8 @@
       image: 'phpmyadmin',
 
       ports: [3307],
+        ports : [3307],
+
 
 
       env: {
@@ -117,12 +178,20 @@
         configMapKeyRef: {},
       },
 
+
       //host: ''
 
       volumes: {
         mysqldata: {
           mountPath: '/var/lib/mysql',
           diskSpace: '4Gi',
+        envFrom: {
+              secretKeyRef: {
+                // Format 'secret_name' : 'key's_value_to_access'
+                'Mysql-env-secrets' : 'MYSQL_ROOT_PASSWORD'
+              },
+              configMapKeyRef: {},
+
         },
       },
 
@@ -135,6 +204,29 @@
           cpu: '1',
           memory: '1G',
         },
+
+        //host: ''
+
+        volumes: {
+              'mysqldata': {
+                mountPath: '/var/lib/mysql',
+                diskSpace: '4Gi',
+              },
+          },
+
+        quotas: {
+          min: {
+            "cpu": "100m",
+            "memory": "64M",
+          },
+          max: {
+            "cpu": "1",
+            "memory": "1G"
+            }
+          }
+      }
+
+
       },
     },
 
