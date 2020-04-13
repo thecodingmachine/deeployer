@@ -2,10 +2,8 @@
     "$schema": "../../deeployer.schema.json",
     "containers": {
         "elasticsearch": {
-           
-            "image": "image_name",
-
-            "quotas" : {
+            "image": "",
+            "quotas": {
                 "max": {
                     "cpu": ""
                 }

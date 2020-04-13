@@ -5,8 +5,7 @@
             "image": "image_name",
             "env": {
                 "FOO": 42
-              }
-                
+            }
         }
     }
 }
