@@ -9,6 +9,7 @@ echo "Starting Kubernetes tests"
 
 expectError "Testing creation of host without a port" "host_without_port.json" "Can't create container by deployment without any port with deeployer" ../scripts/main.jsonnet
 expectValue "Testing creation of ingress when a host is added" "host.json" ".generatedConf.php_myadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
+expectValue "Testing the presence of a timestamp label to force reloading" "host.json" ".generatedConf.php_myadmin.deployment.spec.template.metadata.labels.deeployerTimestamp" '"2020-05-05 00:00:00"' ../scripts/main.jsonnet
 assertValidK8s "host.json" ../scripts/main.jsonnet
 
 # Docker-compose tests
@@ -34,4 +35,4 @@ ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_wit
 
 echo
 echo
-echo -e "\e[32m✓✓\e[39m All tests successful! ✓✓"
+echo -e "\e[32m✓✓\e[39m All tests successful! \e[32m✓✓\e[39m"
