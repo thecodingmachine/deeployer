@@ -74,6 +74,11 @@ if [[ "$COMMAND" == "apply" ]]; then
     exit 1;
   fi
 
+  # Let's connect (if we are in the Docker container)
+  if [[ -f "/usr/local/bin/connect" ]]; then
+    /usr/local/bin/connect
+  fi
+
   # Let's get the current cluster
   CONTEXT_NAME=$(kubectl config current-context)
 
