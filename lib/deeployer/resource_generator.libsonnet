@@ -46,7 +46,7 @@
                   deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName('tcmregistry')],) +
                   // we add the current date to a random label to force a redeployment, even if the container name did not change.
                   // TODO: in the future, we might want to add this timestamp only for images that we are in charge of.
-                  deployment.mixin.spec.template.metadata.withLabels({ deeployerTimestamp: std.extVar('timestamp') }),
+                  deployment.mixin.spec.template.metadata.withLabelsMixin({ deeployerTimestamp: std.extVar('timestamp') }),
 
       //std.mapWithKey(fv, data.volumes),
     } + (if std.objectHas(data, 'volumes') then {
