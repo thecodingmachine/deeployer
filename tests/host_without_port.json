@@ -1,6 +1,6 @@
 {
   "containers": {
-    "php_myadmin": {
+    "phpmyadmin": {
       "image": "phpmyadmin",
 
       "host": "myhost.com"

@@ -60,11 +60,18 @@ if [ ! -f "$DEEPLOYER_FILE" ]; then
   exit 1;
 fi
 
-# Let's validate the Deeployer file
-ajv test -s /deeployer/deeployer.schema.json -d $DEEPLOYER_FILE --valid
-
 # Get the directory of the script (resolving any symlink)
 DIR="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" >/dev/null 2>&1 && pwd -P )"
+
+# Let's validate the Deeployer file
+jsonnet $DEEPLOYER_FILE --ext-code "env=$JSON_ENV" --ext-str timestamp="2020-05-05 00:00:00" > /tmp/deeployer.json
+set +e
+ajv test -s $DIR/../deeployer.schema.json -d /tmp/deeployer.json --valid
+if [[ $? != 0 ]]; then
+  echo -e "\e[31m❌\e[39m Your configuration file '$DEEPLOYER_FILE' has an invalid format. See the message above for details."
+  exit 1
+fi
+set -e
 
 config=$(cat "$DEEPLOYER_FILE")
 
