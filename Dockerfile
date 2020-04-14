@@ -12,7 +12,7 @@ RUN apt-get update &&\
     apt-get install -y --no-install-recommends gnupg &&\
     curl -sL https://deb.nodesource.com/setup_12.x | bash - &&\
     apt-get update &&\
-    apt-get install -y --no-install-recommends nodejs jq
+    apt-get install -y --no-install-recommends nodejs jq jsonnet
 
 # install AJV for schema validation
 RUN npm install -g ajv-cli
