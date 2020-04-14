@@ -106,7 +106,7 @@ Here is a sample file:
       "host": "phpmyadmin."+baseUrl,
       "ports": [80],
       "env": {
-        "PMA_HOST": "mysql"
+        "PMA_HOST": "mysql",
         "MYSQL_ROOT_PASSWORD": mySqlPassword
       }
     }
@@ -149,7 +149,7 @@ prod + {
       "host": "phpmyadmin."+baseUrl,
       "ports": [80],
       "env": {
-        "PMA_HOST": "mysql"
+        "PMA_HOST": "mysql",
         "MYSQL_ROOT_PASSWORD": prod.containers.mysql.env.MYSQL_ROOT_PASSWORD
       }
     }
