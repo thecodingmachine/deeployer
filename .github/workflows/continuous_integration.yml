@@ -76,4 +76,4 @@ jobs:
         run: docker build -t thecodingmachine/deeployer:latest .
 
       - name: "Test image"
-        run: docker run --rm -it -e "JSON_ENV={}" -v $(pwd):/var/app thecodingmachine/deeployer:latest deeployer-k8s show
+        run: docker run --rm -e "JSON_ENV={}" -v $(pwd):/var/app thecodingmachine/deeployer:latest deeployer-k8s show
