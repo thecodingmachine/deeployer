@@ -5,7 +5,7 @@ set -e
 usage()
 {
     echo "usage: deeployer-k8s show [deeployer.json] | [-h]]"
-    echo "       deeployer-k8s apply [--namespace somenamespace] [deeployer.json] | [-h]]"
+    echo "       deeployer-k8s apply [--namespace somenamespace] [--no-wait] [--timeout 600s] [deeployer.json] | [-h]]"
 }
 
 # Running this at the very beginning, before we declare any environment variable
@@ -14,6 +14,9 @@ if [[ "$JSON_ENV" == "" ]]; then
 fi
 
 NAMESPACE=
+# A default timeout of 10 minutes should leave some room for cluster autoscaling if needed
+TIMEOUT=600s
+WAIT=1
 
 # DEEPLOYER_FILE contains ./deeployer.libsonnet (if this file exists), or ./deeployer.json (if this file exists) or empty
 DEEPLOYER_FILE=./deeployer.libsonnet
@@ -40,6 +43,12 @@ while [ "$1" != "" ]; do
     case $1 in
         -n | --namespace )      shift
                                 NAMESPACE=$1
+                                ;;
+        -t | --timeout )        shift
+                                TIMEOUT=$1
+                                ;;
+        --no-wait )             shift
+                                WAIT=0
                                 ;;
         -h | --help )           usage
                                 exit
@@ -99,6 +108,10 @@ if [[ "$COMMAND" == "apply" ]]; then
   kubectl create namespace "$NAMESPACE" || true
 
   tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" --dangerous-auto-approve "$DIR"
+
+  if [[ "$WAIT" == "1" ]]; then
+    kubectl -n "$NAMESPACE" wait deployment --all=true --for=condition=Available --timeout=$TIMEOUT
+  fi
 elif [[ "$COMMAND" == "show" ]]; then
   # --dangerous-allow-redirect is needed for using the command in a Docker container
   tk show --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" "$DIR" --dangerous-allow-redirect
