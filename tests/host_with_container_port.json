@@ -4,7 +4,8 @@
       "image": "phpmyadmin",
 
       "host": {
-        "url": "myhost.com"
+        "url": "myhost.com",
+        "containerPort": 3000
       }
     }
   }

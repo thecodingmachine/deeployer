@@ -17,6 +17,26 @@
   local resources = $.core.v1.container.resourcesType,
   local httpIngressPath = ingressRule.mixin.http.pathsType,
 
+  /**
+   * Returns the list of ports to listen to by merging "ports" with the "containerPort" of the host section
+   */
+  local getPorts = function(container)
+    std.set( // ports are a "set" (an array of unique values)
+        (if std.objectHas(container, 'ports') then container.ports else []) +
+        // TODO: if host is defined and containerPort is not defined, put port 80 unless "ports" has only 1 element
+        if std.objectHas(container, 'host') && std.objectHas(container.host, 'containerPort') then [container.host.containerPort] else []
+        ),
+
+  local getHttpPort = function(container, deploymentName)
+    if !std.objectHas(container, 'host') then
+      error "Unexpected call to getHttpPort if there is no host: "+container
+    else if std.objectHas(container.host, 'containerPort') then container.host.containerPort
+    else
+        if getPorts(container) == [] then error "For container \""+deploymentName+"\", host \"" + container.host.url + '" needs a port to bind to. Please provide a containerPort in the "host" section.'
+          else if std.length(getPorts(container)) > 1 then error ' For service "' + deploymentName + "\", there is a host defined but several ports open. Please provide a containerPort in the \"host\" section."
+          else getPorts(container)[0]
+        ,
+
   local f = function(deploymentName, data)
     {
 
@@ -54,7 +74,10 @@
          } else {})
     + (
       if std.objectHas(data, 'ports') then
-        (if std.objectHas(data, 'host') then
+        { service: $.util.serviceFor(self.deployment) }
+      else {})
+    + (
+      if std.objectHas(data, 'host') then
            {
              service: $.util.serviceFor(self.deployment),
              ingress: ingress.new() +
@@ -63,21 +86,16 @@
                       //ingress.mixin.metadata.withAnnotations(data.annotations)+
 
                       ingress.mixin.spec.withRules([ingressRule.new() +
-                                                    ingressRule.withHost(data.host) +
+                                                    ingressRule.withHost(data.host.url) +
                                                     ingressRule.mixin.http.withPaths(
                                                       httpIngressPath.new() +
                                                       httpIngressPath.mixin.backend.withServiceName(deploymentName) +
-                                                      httpIngressPath.mixin.backend.withServicePort(data.ports[0])
+                                                      httpIngressPath.mixin.backend.withServicePort(getHttpPort(data, deploymentName))
                                                     )],),
            }
 
-         else { service: $.util.serviceFor(self.deployment) })
+         else { service: $.util.serviceFor(self.deployment) }
 
-      else if !std.objectHas(data, 'ports') then error " Can't create container by deployment without any port with deeployer "
-      else if std.objectHas(data, 'host') then error " Can't expose service by host \"" + data.host + '" without a port '
-      else if std.length(data.ports) > 1 then error ' For service "' + deploymentName + "\", there is a host defined but several ports open. We don't support this case yet. "
-      else if std.length(data.ports) == 0 then error ' There is no port defined for service "' + deploymentName + '"'
-      else if std.objectHas(data, 'ports') then {}
     ) + (if std.objectHas(data, 'volumes') then {
            pvcs: std.mapWithKey(function(pvcName, pvcData) { apiVersion: 'v1', kind: 'PersistentVolumeClaim' } +
                                                            pvc.mixin.metadata.withName(pvcName + '-pvc') +
