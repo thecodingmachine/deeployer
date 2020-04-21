@@ -21,21 +21,21 @@
    * Returns the list of ports to listen to by merging "ports" with the "containerPort" of the host section
    */
   local getPorts = function(container)
-    std.set( // ports are a "set" (an array of unique values)
-        (if std.objectHas(container, 'ports') then container.ports else []) +
-        // TODO: if host is defined and containerPort is not defined, put port 80 unless "ports" has only 1 element
-        if std.objectHas(container, 'host') && std.objectHas(container.host, 'containerPort') then [container.host.containerPort] else []
-        ),
+    std.set(  // ports are a "set" (an array of unique values)
+      (if std.objectHas(container, 'ports') then container.ports else []) +
+      // TODO: if host is defined and containerPort is not defined, put port 80 unless "ports" has only 1 element
+      if std.objectHas(container, 'host') && std.objectHas(container.host, 'containerPort') then [container.host.containerPort] else []
+    ),
 
   local getHttpPort = function(container, deploymentName)
     if !std.objectHas(container, 'host') then
-      error "Unexpected call to getHttpPort if there is no host: "+container
+      error 'Unexpected call to getHttpPort if there is no host: ' + container
     else if std.objectHas(container.host, 'containerPort') then container.host.containerPort
     else
-        if getPorts(container) == [] then error "For container \""+deploymentName+"\", host \"" + container.host.url + '" needs a port to bind to. Please provide a containerPort in the "host" section.'
-          else if std.length(getPorts(container)) > 1 then error ' For service "' + deploymentName + "\", there is a host defined but several ports open. Please provide a containerPort in the \"host\" section."
-          else getPorts(container)[0]
-        ,
+      if getPorts(container) == [] then error 'For container "' + deploymentName + '", host "' + container.host.url + '" needs a port to bind to. Please provide a containerPort in the "host" section.'
+      else if std.length(getPorts(container)) > 1 then error ' For service "' + deploymentName + '", there is a host defined but several ports open. Please provide a containerPort in the "host" section.'
+      else getPorts(container)[0]
+  ,
 
   local f = function(deploymentName, data)
     {
@@ -75,26 +75,27 @@
     + (
       if std.objectHas(data, 'ports') then
         { service: $.util.serviceFor(self.deployment) }
-      else {})
+      else {}
+    )
     + (
       if std.objectHas(data, 'host') then
-           {
-             service: $.util.serviceFor(self.deployment),
-             ingress: ingress.new() +
-                      ingress.mixin.metadata.withName('ingress-' + deploymentName) +
-                      //ingress.mixin.metadata.withLabels(data.labels)+
-                      //ingress.mixin.metadata.withAnnotations(data.annotations)+
+        {
+          service: $.util.serviceFor(self.deployment),
+          ingress: ingress.new() +
+                   ingress.mixin.metadata.withName('ingress-' + deploymentName) +
+                   //ingress.mixin.metadata.withLabels(data.labels)+
+                   //ingress.mixin.metadata.withAnnotations(data.annotations)+
 
-                      ingress.mixin.spec.withRules([ingressRule.new() +
-                                                    ingressRule.withHost(data.host.url) +
-                                                    ingressRule.mixin.http.withPaths(
-                                                      httpIngressPath.new() +
-                                                      httpIngressPath.mixin.backend.withServiceName(deploymentName) +
-                                                      httpIngressPath.mixin.backend.withServicePort(getHttpPort(data, deploymentName))
-                                                    )],),
-           }
+                   ingress.mixin.spec.withRules([ingressRule.new() +
+                                                 ingressRule.withHost(data.host.url) +
+                                                 ingressRule.mixin.http.withPaths(
+                                                   httpIngressPath.new() +
+                                                   httpIngressPath.mixin.backend.withServiceName(deploymentName) +
+                                                   httpIngressPath.mixin.backend.withServicePort(getHttpPort(data, deploymentName))
+                                                 )],),
+        }
 
-         else { service: $.util.serviceFor(self.deployment) }
+      else { service: $.util.serviceFor(self.deployment) }
 
     ) + (if std.objectHas(data, 'volumes') then {
            pvcs: std.mapWithKey(function(pvcName, pvcData) { apiVersion: 'v1', kind: 'PersistentVolumeClaim' } +
