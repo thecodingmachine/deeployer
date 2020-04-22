@@ -107,7 +107,7 @@
                    //ingress.mixin.metadata.withLabels(data.labels)+
                    (if containerHasHttps(data) then
                       ingress.mixin.metadata.withAnnotations({
-                        'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
+                        'cert-manager.io/issuer': 'letsencrypt-prod',
                       })
                     else
                       {})

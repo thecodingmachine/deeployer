@@ -290,6 +290,8 @@ certificates using [Let's encrypt](https://letsencrypt.org/).
 You can install Cert Manager using [their installation documentation](https://cert-manager.io/docs/installation/kubernetes/).
 You do not need to create a "cluster issuer" as Deeployer will come with its own issuer.
 
+You need to install Cert Manager v0.11+.
+
 ### Deploying using docker-compose
 
 TODO
