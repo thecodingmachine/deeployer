@@ -49,7 +49,6 @@ function expectValue() {
         exit 1
     fi
     set +o pipefail
-    (echo $OUTPUT | grep "$3") > /dev/null
     if [[ $OUTPUT != "$4" ]]; then
         echo -e "\e[31m❌\e[39m Expected '$4'"
         echo "  Instead, got '$OUTPUT'"

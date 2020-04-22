@@ -37,6 +37,27 @@
       else getPorts(container)[0]
   ,
 
+  /**
+   * Returns true of the container passed in parameter requires https, false otherwise
+   */
+  local containerHasHttps = function(container)
+    if std.objectHas(container, 'host') then
+      if !std.objectHas(container.host, 'https') then
+        false
+      else
+        if container.host.https == 'disable' then
+          false
+        else
+          true
+    else
+      false,
+
+  /**
+   * Returns true if at least one container requires HTTPS
+   */
+  local environmentRequiresHttps = function(containers)
+      std.length(std.filter(function(containerName) containerHasHttps(containers[containerName]), std.objectFields(containers))) > 0,
+
   local f = function(deploymentName, data)
     {
 
@@ -84,7 +105,14 @@
           ingress: ingress.new() +
                    ingress.mixin.metadata.withName('ingress-' + deploymentName) +
                    //ingress.mixin.metadata.withLabels(data.labels)+
-                   //ingress.mixin.metadata.withAnnotations(data.annotations)+
+                   (if containerHasHttps(data) then
+                       ingress.mixin.metadata.withAnnotations({
+                        "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+                       })
+                   else
+                       {})
+
+                   +
 
                    ingress.mixin.spec.withRules([ingressRule.new() +
                                                  ingressRule.withHost(data.host.url) +
@@ -92,7 +120,18 @@
                                                    httpIngressPath.new() +
                                                    httpIngressPath.mixin.backend.withServiceName(deploymentName) +
                                                    httpIngressPath.mixin.backend.withServicePort(getHttpPort(data, deploymentName))
-                                                 )],),
+                                                 )],)
+                   + if containerHasHttps(data) then
+                     {
+                       spec+: {
+                           tls: [{
+                             hosts: [ data.host.url ],
+                             secretName: "ingress-secret-" + deploymentName
+                           }]
+                       }
+                     }
+                   else
+                    {}
         }
 
       else { service: $.util.serviceFor(self.deployment) }
@@ -105,10 +144,44 @@
                                 data.volumes),
          } else {}),
 
+  local issuer = function(config)
+    if environmentRequiresHttps(config.containers) then
+      {
+        issuer: {
+
+          	"apiVersion": "cert-manager.io/v1alpha2",
+          	"kind": "Issuer",
+          	"metadata": {
+          		"name": "letsencrypt-prod"
+          	},
+          	"spec": {
+          		"acme": {
+          			"email": if std.objectHas(config, 'config') && std.objectHas(config.config, 'https') && std.objectHas(config.config.https, 'mail') then config.config.https.mail else error "In order to have support for HTTPS, you need to provide an email address in the { \"config\": { \"https\": { \"mail\": \"some@email.com\" } } }",
+          			"server": "https://acme-v02.api.letsencrypt.org/directory",
+          			"privateKeySecretRef": {
+          				"name": "letsencrypt-prod-secret"
+          			},
+          			"solvers": [
+          				{
+          					"http01": {
+          						"ingress": {
+          							"class": "nginx"
+          						}
+          					}
+          				}
+          			]
+          		}
+          	}
+
+        }
+      }
+    else
+      {}
+  ,
 
   deeployer:: {
-    generateResources(config):: std.mapWithKey(f, config.containers),
+    generateResources(config):: std.mapWithKey(f, config.containers) + issuer(config)
+    ,
   },
-
 
 }

@@ -30,7 +30,7 @@
 							"properties": {
 								"url": {
 									"type": "string",
-									"pattern": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+									"format": "hostname"
 								},
 								"containerPort": {
 									"type": "integer",
@@ -42,6 +42,7 @@
 									"enum": ["enable", "disable", "force"]
 								}
 							},
+							"additionalProperties": false,
 							"required": ["url"]
 						},
 						"volumes": {
@@ -101,6 +102,21 @@
 						}
 					},
 					"required": ["image"]
+				}
+			}
+		},
+		"config": {
+			"type": "object",
+			"properties": {
+				"https": {
+					"type": "object",
+					"properties": {
+						"mail": {
+							"type": "string",
+							"format": "email"
+						}
+					},
+					"required": ["mail"]
 				}
 			}
 		}
