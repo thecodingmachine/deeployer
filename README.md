@@ -29,8 +29,10 @@ The Deeployer config file contains the list of containers that makes your enviro
      },
     "phpmyadmin": {
       "image": "phpmyadmin/phpmyadmin:5.0",
-      "host": "phpmyadmin.myapp.localhost",
-      "ports": [80],
+      "host": {
+        "url": "phpmyadmin.myapp.localhost",
+        "containerPort": 80
+      },
       "env": {
         "PMA_HOST": "mysql"
         "MYSQL_ROOT_PASSWORD": "secret"
@@ -103,8 +105,10 @@ Here is a sample file:
      },
     "phpmyadmin": {
       "image": "phpmyadmin/phpmyadmin:5.0",
-      "host": "phpmyadmin."+baseUrl,
-      "ports": [80],
+      "host": {
+         "url": "phpmyadmin."+baseUrl
+         "containerPort": 80
+      },
       "env": {
         "PMA_HOST": "mysql",
         "MYSQL_ROOT_PASSWORD": mySqlPassword
@@ -146,8 +150,10 @@ prod + {
   "containers"+: {
     "phpmyadmin": {
       "image": "phpmyadmin/phpmyadmin:5.0",
-      "host": "phpmyadmin."+baseUrl,
-      "ports": [80],
+      "host": {
+        "url": "phpmyadmin."+baseUrl,
+        "containerPort": 80
+      },
       "env": {
         "PMA_HOST": "mysql",
         "MYSQL_ROOT_PASSWORD": prod.containers.mysql.env.MYSQL_ROOT_PASSWORD

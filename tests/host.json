@@ -3,7 +3,9 @@
       "phpmyadmin": {
         "image": "phpmyadmin",
         "ports": [80],
-        "host": "myhost.com"
+        "host": {
+          "url": "myhost.com"
+        }
       }
     }
   }

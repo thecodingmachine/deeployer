@@ -26,8 +26,23 @@
 						},
 
 						"host": {
-							"type": "string",
-							"minLength": 1
+							"type": "object",
+							"properties": {
+								"url": {
+									"type": "string",
+									"pattern": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+								},
+								"containerPort": {
+									"type": "integer",
+									"minimum": 1,
+									"maximum": 65535
+								},
+								"https": {
+									"type": "string",
+									"enum": ["enable", "disable", "force"]
+								}
+							},
+							"required": ["url"]
 						},
 						"volumes": {
                             "type": "object",
@@ -52,7 +67,7 @@
 						"quotas": {
 							"type": "object",
 							"properties": {
-								
+
 								"min": {
 									"type": "object",
 									"properties": {
@@ -65,9 +80,9 @@
 											"minLength": 1
 										}
 									}
-									
+
 								},
-								
+
 								"max": {
 										"type": "object",
 										"properties": {
@@ -81,7 +96,7 @@
 											}
 										}
 									}
-								
+
 							}
 						}
 					},
