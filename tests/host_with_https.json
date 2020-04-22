@@ -1,0 +1,17 @@
+{
+  "containers": {
+      "phpmyadmin": {
+        "image": "phpmyadmin",
+        "host": {
+          "url": "myhost.com",
+          "containerPort": 80,
+          "https": true
+        }
+      }
+    },
+  "config": {
+    "https": {
+      "mail": "foo@bar.com"
+    }
+  }
+  }

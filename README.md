@@ -34,7 +34,7 @@ The Deeployer config file contains the list of containers that makes your enviro
         "containerPort": 80
       },
       "env": {
-        "PMA_HOST": "mysql"
+        "PMA_HOST": "mysql",
         "MYSQL_ROOT_PASSWORD": "secret"
       }
     }
@@ -198,6 +198,46 @@ Then, you can access all environment variables from the machine running Deeploye
 
 Beware! If the environment variable is not set, Jsonnet will throw an error!
 
+### Enabling HTTPS
+
+Deeployer offers HTTPS support out of the box using Let's encrypt.
+
+**deeployer.json**
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
+  "containers": {
+    "phpmyadmin": {
+      "image": "phpmyadmin/phpmyadmin:5.0",
+      "host": {
+        "url": "phpmyadmin.myapp.localhost",
+        "containerPort": 80,
+        "https": "enable"
+      },
+      "env": {
+        "PMA_HOST": "mysql"
+        "MYSQL_ROOT_PASSWORD": "secret"
+      }
+    }
+  },
+  "config": {
+    "https": {
+      "mail": "mymail@example.com"
+    }
+  }
+}
+```
+
+In order to automatically get a certificate for your HTTPS website, you need to:
+
+- Add `"https": "enable"` in your `host` section
+- At the bottom of the `deeployer.json` file, add a "config.https.mail" entry specifying a mail address. This mail address
+  will be used to warn you, should something goes wrong with the certificate (for instance if the certificate is going
+  to expire soon)
+
+Please note that if you are using Kubernetes, you will need in addition to install CertManager in your cluster.
+[See the relevant Kubernetes documentation below](#configuring-your-kubernetes-cluster-to-support-https) 
+
 ## Usage
 
 ### Deploying using Kubernetes
@@ -240,6 +280,15 @@ You can connect to a GKE cluster by setting these environment variables:
 - `GCLOUD_PROJECT`
 - `GCLOUD_ZONE`
 - `GKE_CLUSTER`
+
+#### Configuring your Kubernetes cluster to support HTTPS
+
+In order to have HTTPS support in Kubernetes, you need to install [Cert Manager](https://cert-manager.io/) in your Kubernetes cluster.
+Cert Manager is a certificate management tool that acts **cluster-wide**. Deeployer configures Cert Manager to generate
+certificates using [Let's encrypt](https://letsencrypt.org/).
+
+You can install Cert Manager using [their installation documentation](https://cert-manager.io/docs/installation/kubernetes/).
+You do not need to create a "cluster issuer" as Deeployer will come with its own issuer.
 
 ### Deploying using docker-compose
 
