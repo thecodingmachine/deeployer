@@ -1,0 +1,18 @@
+{
+  "$schema": "../deeployer.schema.json",
+  "containers": {
+      "mysql": {
+        "image": "mysql:8",
+        "volumes": {
+          "data": {
+            "diskSpace": "1G",
+            "mountPath": "/var/lib/mysql"
+          },
+          "conf": {
+            "diskSpace": "10M",
+            "mountPath": "/etc/mysql"
+          }
+        }
+      }
+    }
+  }
