@@ -140,7 +140,7 @@
            pvcs: std.mapWithKey(function(pvcName, pvcData) { apiVersion: 'v1', kind: 'PersistentVolumeClaim' } +
                                                            pvc.mixin.metadata.withName(pvcName + '-pvc') +
                                                            pvc.mixin.spec.withAccessModes('ReadWriteOnce',) +
-                                                           pvc.mixin.spec.resources.withRequests({ storage : pvcData.diskSpace}),
+                                                           pvc.mixin.spec.resources.withRequests({ storage: pvcData.diskSpace }),
                                 data.volumes),
          } else {}),
 
