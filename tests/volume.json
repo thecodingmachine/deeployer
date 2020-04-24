@@ -1,12 +1,16 @@
 {
   "$schema": "../deeployer.schema.json",
   "containers": {
-      "phpmyadmin": {
+      "mysql": {
         "image": "mysql:8",
         "volumes": {
           "data": {
-            "diskspace": "1G",
-            "mountpath": "/var/lib/mysql"
+            "diskSpace": "1G",
+            "mountPath": "/var/lib/mysql"
+          },
+          "conf": {
+            "diskSpace": "10M",
+            "mountPath": "/etc/mysql"
           }
         }
       }
