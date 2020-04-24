@@ -1,0 +1,14 @@
+{
+  "$schema": "../deeployer.schema.json",
+  "containers": {
+      "phpmyadmin": {
+        "image": "mysql:8",
+        "volumes": {
+          "data": {
+            "diskspace": "1G",
+            "mountpath": "/var/lib/mysql"
+          }
+        }
+      }
+    }
+  }
