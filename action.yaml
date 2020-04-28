@@ -7,6 +7,10 @@ inputs:
   namespace:
     description: 'Kubernetes namespace to deploy to'
     required: true
+  timeout:
+    description: 'Maximum time to wait for deployment success before considering it failed (defaults to "600s")'
+    required: false
+    default: '600s'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -15,6 +19,8 @@ runs:
     - apply
     - "--namespace"
     - ${{ inputs.namespace }}
+    - "--timeout"
+    - ${{ inputs.timeout }}
     - ${{ inputs.deeployerFile }}
 
 branding:

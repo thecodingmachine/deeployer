@@ -26,8 +26,24 @@
 						},
 
 						"host": {
-							"type": "string",
-							"minLength": 1
+							"type": "object",
+							"properties": {
+								"url": {
+									"type": "string",
+									"format": "hostname"
+								},
+								"containerPort": {
+									"type": "integer",
+									"minimum": 1,
+									"maximum": 65535
+								},
+								"https": {
+									"type": "string",
+									"enum": ["enable", "disable", "force"]
+								}
+							},
+							"additionalProperties": false,
+							"required": ["url"]
 						},
 						"volumes": {
                             "type": "object",
@@ -36,11 +52,11 @@
 								"^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$": {
 									"type": "object",
 									"properties": {
-										"mountpath": {
+										"mountPath": {
 											"type": "string",
 											"minLength": 1
 										},
-										"diskspace": {
+										"diskSpace": {
 											"type": "string",
 											"minLength": 1
 										}
@@ -52,7 +68,7 @@
 						"quotas": {
 							"type": "object",
 							"properties": {
-								
+
 								"min": {
 									"type": "object",
 									"properties": {
@@ -65,9 +81,9 @@
 											"minLength": 1
 										}
 									}
-									
+
 								},
-								
+
 								"max": {
 										"type": "object",
 										"properties": {
@@ -81,11 +97,26 @@
 											}
 										}
 									}
-								
+
 							}
 						}
 					},
 					"required": ["image"]
+				}
+			}
+		},
+		"config": {
+			"type": "object",
+			"properties": {
+				"https": {
+					"type": "object",
+					"properties": {
+						"mail": {
+							"type": "string",
+							"format": "email"
+						}
+					},
+					"required": ["mail"]
 				}
 			}
 		}

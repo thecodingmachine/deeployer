@@ -13,14 +13,286 @@ It aims to automate a number of processes, including easy backup setup, easy rev
 
 ## The Deeployer config file
 
-TODO
+The Deeployer config file contains the list of containers that makes your environment:
+
+**deeployer.json**
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
+  "containers": {
+     "mysql": {
+       "image": "mysql:8.0",
+       "ports": [3306],
+       "env": {
+         "MYSQL_ROOT_PASSWORD": "secret"
+       }
+     },
+    "phpmyadmin": {
+      "image": "phpmyadmin/phpmyadmin:5.0",
+      "host": {
+        "url": "phpmyadmin.myapp.localhost",
+        "containerPort": 80
+      },
+      "env": {
+        "PMA_HOST": "mysql",
+        "MYSQL_ROOT_PASSWORD": "secret"
+      }
+    }
+  }
+}
+```
+
+TODO: add volumes when ready
+
+Let's have a closer look at this file.
+
+The first line is optional:
+
+```
+  "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
+```
+(TODO: migrate the URL to a static website)
+
+It declares the JsonSchema. We highly recommend to keep this line. Indeed, if you are using an IDE like Visual Studio
+Code or a JetBrain's IDE, you will get auto-completion and validation of the structure of the file right in your IDE!
+
+Then, the "containers" section contains the list of containers for your environment.
+In the example above, we declare 2 containers: "mysql" and "phpmyadmin".
+Just like in "docker-compose", the name of the container is also an internal DNS record. So from any container of your
+environment, the "mysql" container is reachable at the "mysql" domain name. 
+
+For each container, you need to pass:
+
+- "image": the Docker image for the container
+- "ports": a list of ports this image requires. Warning! Unlike in `docker-compose`, this is not a list of ports that
+  will be shared with the host. This is simply a list of ports this image opens. This is particularly important if you
+  do deployments in Kubernetes (each port will be turned into a K8S service).
+
+You can pass environment variables using the "env" key:
+
+```json
+"env": {
+ "MYSQL_ROOT_PASSWORD": "secret"
+}
+```
+
+We will see later how to manage those secrets without storing them in full text. (TODO)
+ 
 
 ## Using Jsonnet
 
-TODO: explain how to create variants of the main file (for instance a dev environment with PHPMyAdmin)
+JSON is not the only format supported for the "Deeployer" config file. You can also write the file in [Jsonnet](https://jsonnet.org/learning/tutorial.html).
+
+Jsonnet? This is a very powerful data templating language for JSON.
+
+By convention, you should name your Deeployer file `deeployer.libsonnet`. (TODO: switch to `deeployer.jsonnnet`)
+
+Here is a sample file:
+
+**deeployer.libsonnet**
+```jsonnnet
+{
+  local mySqlPassword = "secret",
+  local baseUrl = "myapp.localhost",
+  "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
+  "containers": {
+     "mysql": {
+       "image": "mysql:8.0",
+       "ports": [3306],
+       "env": {
+         "MYSQL_ROOT_PASSWORD": mySqlPassword
+       }
+     },
+    "phpmyadmin": {
+      "image": "phpmyadmin/phpmyadmin:5.0",
+      "host": {
+         "url": "phpmyadmin."+baseUrl
+         "containerPort": 80
+      },
+      "env": {
+        "PMA_HOST": "mysql",
+        "MYSQL_ROOT_PASSWORD": mySqlPassword
+      }
+    }
+  }
+}
+```
+
+In the example above, we declare 2 variables and use these variables in the config file. See how the `mySqlPassword`
+variable is used twice? Jsonnet allows us to avoid duplicating configuration code in all containers.
+
+But there is even better! Let's assume you have a staging and a production environment. Maybe you want PhpMyAdmin on the
+staging environment (for testing purpose) but not on the production environment. Using Jsonnet, we can do this easily
+using 2 files:
+
+**deeployer.libsonnet**
+```jsonnnet
+{
+  local mySqlPassword = "secret",
+  "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
+  "containers": {
+     "mysql": {
+       "image": "mysql:8.0",
+       "ports": [3306],
+       "env": {
+         "MYSQL_ROOT_PASSWORD": mySqlPassword
+       }
+     }
+  }
+}
+```
+
+**deeployer-dev.libsonnet**
+```jsonnnet
+local prod = import "deeployer.libsonnet";
+local baseUrl = "myapp.localhost";
+prod + {
+  "containers"+: {
+    "phpmyadmin": {
+      "image": "phpmyadmin/phpmyadmin:5.0",
+      "host": {
+        "url": "phpmyadmin."+baseUrl,
+        "containerPort": 80
+      },
+      "env": {
+        "PMA_HOST": "mysql",
+        "MYSQL_ROOT_PASSWORD": prod.containers.mysql.env.MYSQL_ROOT_PASSWORD
+      }
+    }
+  }
+}
+```
+
+TODO: test this.
 
 
 ## Referencing environment variables in the Deeployer config file
+
+When doing continuous deployment, it is common to put environment dependant variables and secrets in environment
+variables. Deeployer can access environment variables using the Jsonnet "env" external variable:
+
+**deeployer.libsonnet**
+```jsonnnet
+local env = std.extVar("env");
+{
+  local mySqlPassword = "secret",
+  "containers": {
+     "mysql": {
+       "image": "mysql:8.0",
+       "ports": [3306],
+       "env": {
+         "MYSQL_ROOT_PASSWORD": env.MYSQL_PASSWORD
+       }
+     }
+  }
+}
+```
+
+The first line is putting all environments variables in the `env` local variable:
+
+```jsonnet
+local env = std.extVar("env");
+```
+
+Then, you can access all environment variables from the machine running Deeployer using `env.ENV_VARIABLE_NAME`.
+
+Beware! If the environment variable is not set, Jsonnet will throw an error!
+
+### Enabling HTTPS
+
+Deeployer offers HTTPS support out of the box using Let's encrypt.
+
+**deeployer.json**
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
+  "containers": {
+    "phpmyadmin": {
+      "image": "phpmyadmin/phpmyadmin:5.0",
+      "host": {
+        "url": "phpmyadmin.myapp.localhost",
+        "containerPort": 80,
+        "https": "enable"
+      },
+      "env": {
+        "PMA_HOST": "mysql"
+        "MYSQL_ROOT_PASSWORD": "secret"
+      }
+    }
+  },
+  "config": {
+    "https": {
+      "mail": "mymail@example.com"
+    }
+  }
+}
+```
+
+In order to automatically get a certificate for your HTTPS website, you need to:
+
+- Add `"https": "enable"` in your `host` section
+- At the bottom of the `deeployer.json` file, add a "config.https.mail" entry specifying a mail address. This mail address
+  will be used to warn you, should something goes wrong with the certificate (for instance if the certificate is going
+  to expire soon)
+
+Please note that if you are using Kubernetes, you will need in addition to install CertManager in your cluster.
+[See the relevant Kubernetes documentation below](#configuring-your-kubernetes-cluster-to-support-https) 
+
+## Usage
+
+### Deploying using Kubernetes
+
+View the list of Kubernetes resources that will be generated using `deeployer-k8s show`
+
+```console 
+$ deeployer-k8s show
+```
+
+By default, Deeployer will look for a `deeployer.libsonnet` or a `deeployer.json` file in the current working directory.
+
+You can specify an alternative name in the command:
+
+```console 
+$ deeployer-k8s show deeployer-dev.jsonnet
+```
+
+The "show" command is only used for debugging. In order to make an actual deployment, use the "apply" command:
+
+```console 
+$ deeployer-k8s apply --namespace=target-namespace
+```
+
+Important: if you are using Deeployer locally, Deeployer will not use your Kubectl config by default. You need to pass
+the Kubectl configuration as an environment variable.
+
+#### Connecting to a "standard" environment
+
+If a "kubeconfig" file is enough to connect to your environement, you can connect to your cluster
+by setting the `KUBE_CONFIG_FILE` environment variable.
+
+- `KUBE_CONFIG_FILE` should contain the content of the *kubeconfig* file.
+
+#### Connecting to a GCloud environment
+
+You can connect to a GKE cluster by setting these environment variables:
+
+- `GCLOUD_SERVICE_KEY`
+- `GCLOUD_PROJECT`
+- `GCLOUD_ZONE`
+- `GKE_CLUSTER`
+
+#### Configuring your Kubernetes cluster to support HTTPS
+
+In order to have HTTPS support in Kubernetes, you need to install [Cert Manager](https://cert-manager.io/) in your Kubernetes cluster.
+Cert Manager is a certificate management tool that acts **cluster-wide**. Deeployer configures Cert Manager to generate
+certificates using [Let's encrypt](https://letsencrypt.org/).
+
+You can install Cert Manager using [their installation documentation](https://cert-manager.io/docs/installation/kubernetes/).
+You do not need to create a "cluster issuer" as Deeployer will come with its own issuer.
+
+You need to install Cert Manager v0.11+.
+
+### Deploying using docker-compose
 
 TODO
 
@@ -52,7 +324,41 @@ TODO
 
 ## Usage in Github actions
 
-TODO
+Deeployer comes with a Github action.
+
+```deploy_workflow.yaml
+name: Deploy Docker image
+
+on:
+  - push
+
+jobs:
+  deeploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Deploy
+        uses: thecodingmachine/deeployer@master
+        env:
+          KUBE_CONFIG_FILE: ${{ secrets.KUBE_CONFIG_FILE }}
+        with:
+          namespace: target-namespace
+```
+
+You will need to put the content of your Kubernetes configuration file in the `KUBE_CONFIG_FILE` secret on Github.
+
+### Deploying using the Github action in a Google cloud Kubernetes cluster
+
+If you are connecting to a Google Cloud cluster, instead of passing a `KUBE_CONFIG_FILE`, you will need to pass
+this set of environment variables:
+
+- `GCLOUD_SERVICE_KEY`
+- `GCLOUD_PROJECT`
+- `GCLOUD_ZONE`
+- `GKE_CLUSTER`
 
 ## Contributing
 
