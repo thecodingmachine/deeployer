@@ -5,10 +5,18 @@ set -e
 usage()
 {
     echo "usage: deeployer-k8s show [deeployer.json] | [-h]]"
-    echo "       deeployer-k8s apply [--namespace somenamespace] [deeployer.json] | [-h]]"
+    echo "       deeployer-k8s apply [--namespace somenamespace] [--no-wait] [--timeout 600s] [deeployer.json] | [-h]]"
 }
 
+# Running this at the very beginning, before we declare any environment variable
+if [[ "$JSON_ENV" == "" ]]; then
+  JSON_ENV=$(jq -n env)
+fi
+
 NAMESPACE=
+# A default timeout of 10 minutes should leave some room for cluster autoscaling if needed
+TIMEOUT=600s
+WAIT=1
 
 # DEEPLOYER_FILE contains ./deeployer.libsonnet (if this file exists), or ./deeployer.json (if this file exists) or empty
 DEEPLOYER_FILE=./deeployer.libsonnet
@@ -36,6 +44,12 @@ while [ "$1" != "" ]; do
         -n | --namespace )      shift
                                 NAMESPACE=$1
                                 ;;
+        -t | --timeout )        shift
+                                TIMEOUT=$1
+                                ;;
+        --no-wait )             shift
+                                WAIT=0
+                                ;;
         -h | --help )           usage
                                 exit
                                 ;;
@@ -58,13 +72,31 @@ fi
 # Get the directory of the script (resolving any symlink)
 DIR="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" >/dev/null 2>&1 && pwd -P )"
 
+# Let's validate the Deeployer file
+jsonnet $DEEPLOYER_FILE --ext-code "env=$JSON_ENV" --ext-str timestamp="2020-05-05 00:00:00" > /tmp/deeployer.json
+set +e
+OUTPUT=`ajv test -s $DIR/../deeployer.schema.json -d /tmp/deeployer.json --valid`
+if [[ $? != 0 ]]; then
+  echo "$OUTPUT"
+  echo -e "\e[31m❌\e[39m Your configuration file '$DEEPLOYER_FILE' has an invalid format. See the message above for details."
+  exit 1
+fi
+set -e
+
 config=$(cat "$DEEPLOYER_FILE")
+
+TIMESTAMP=$(date +%s)
 
 if [[ "$COMMAND" == "apply" ]]; then
   if [[ "$NAMESPACE" == "" ]]; then
     echo "When using 'apply', you must pass a namespace in paramater"
     echo "  deeployer-k8s apply --namespace foobar"
     exit 1;
+  fi
+
+  # Let's connect (if we are in the Docker container)
+  if [[ -f "/usr/local/bin/connect" ]]; then
+    /usr/local/bin/connect
   fi
 
   # Let's get the current cluster
@@ -75,10 +107,14 @@ if [[ "$COMMAND" == "apply" ]]; then
   # Let's create the namespace if it does not exists
   kubectl create namespace "$NAMESPACE" || true
 
-  tk apply --extCode "config=$config" "$DIR"
+  tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" --dangerous-auto-approve "$DIR"
+
+  if [[ "$WAIT" == "1" ]]; then
+    kubectl -n "$NAMESPACE" wait deployment --all=true --for=condition=Available --timeout=$TIMEOUT
+  fi
 elif [[ "$COMMAND" == "show" ]]; then
   # --dangerous-allow-redirect is needed for using the command in a Docker container
-  tk show --extCode "config=$config" "$DIR" --dangerous-allow-redirect
+  tk show --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" "$DIR" --dangerous-allow-redirect
 else
-  tk $COMMAND --extCode "config=$config" "$DIR"
+  tk $COMMAND --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" "$DIR"
 fi

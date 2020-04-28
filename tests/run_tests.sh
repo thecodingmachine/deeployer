@@ -7,9 +7,17 @@ set -e
 # Kubernetes tests
 echo "Starting Kubernetes tests"
 
-expectError "Testing creation of host without a port" "host_without_port.json" "Can't create container by deployment without any port with deeployer" ../scripts/main.jsonnet
-expectValue "Testing creation of ingress when a host is added" "host.json" ".generatedConf.php_myadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
+expectError "Testing creation of host without a port" "host_without_port.json" "For container \"phpmyadmin\", host \"myhost.com\" needs a port to bind to. Please provide a containerPort in the \"host\" section." ../scripts/main.jsonnet
+expectValue "Testing creation of ingress when a host is added" "host.json" ".generatedConf.phpmyadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
+expectValue "Testing containerPort of ingress when a host is added" "host_with_container_port.json" ".generatedConf.phpmyadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
+expectValue "Testing https enable (metadata section)" "host_with_https.json" ".generatedConf.phpmyadmin.ingress.metadata.annotations[\"cert-manager.io/issuer\"]" '"letsencrypt-prod"' ../scripts/main.jsonnet
+expectValue "Testing https enable (tls section)" "host_with_https.json" ".generatedConf.phpmyadmin.ingress.spec.tls[0].hosts[0]" '"myhost.com"' ../scripts/main.jsonnet
+expectValue "Testing https enable (issuer)" "host_with_https.json" ".generatedConf.issuer.kind" '"Issuer"' ../scripts/main.jsonnet
+expectError "Testing https enable (missing mail)" "host_with_https_without_mail.json" "In order to have support for HTTPS, you need to provide an email address in the { \"config\": { \"https\": { \"mail\": \"some@email.com\" } } }" ../scripts/main.jsonnet
+expectValue "Testing the presence of a timestamp label to force reloading" "host.json" ".generatedConf.phpmyadmin.deployment.spec.template.metadata.labels.deeployerTimestamp" '"2020-05-05 00:00:00"' ../scripts/main.jsonnet
+expectValue "Testing the presence of a PVC" "volume.json" ".generatedConf.mysql.pvcs.data.spec.resources.requests.storage" '"1G"' ../scripts/main.jsonnet
 assertValidK8s "host.json" ../scripts/main.jsonnet
+assertValidK8s "volume.json" ../scripts/main.jsonnet
 
 # Docker-compose tests
 echo "Starting docker-compose tests"
@@ -34,4 +42,4 @@ ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_wit
 
 echo
 echo
-echo -e "\e[32m✓✓\e[39m All tests successful! ✓✓"
+echo -e "\e[32m✓✓\e[39m All tests successful! \e[32m✓✓\e[39m"
