@@ -1,6 +1,6 @@
 {
-    "$schema": "../../deeployer.schema.json",
-    "containers": {
-        "elasticsearch": {}
-    }
+  "$schema": "../../deeployer.schema.json",
+  "containers": {
+    "elasticsearch": {}
+  }
 }

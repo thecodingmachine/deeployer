@@ -1,11 +1,11 @@
 {
-    "apiVersion": "tanka.dev/v1alpha1",
-    "kind": "Environment",
-    "metadata": {
-        "name": "deeployer"
-    },
-    "spec": {
-        "apiServer": "",
-        "namespace": "deeployer"
-    }
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": {
+    "name": "deeployer"
+  },
+  "spec": {
+    "apiServer": "",
+    "namespace": "deeployer"
+  }
 }
