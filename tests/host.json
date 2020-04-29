@@ -1,11 +1,13 @@
 {
   "containers": {
-      "phpmyadmin": {
-        "image": "phpmyadmin",
-        "ports": [80],
-        "host": {
-          "url": "myhost.com"
-        }
+    "phpmyadmin": {
+      "image": "phpmyadmin",
+      "ports": [
+        80
+      ],
+      "host": {
+        "url": "myhost.com"
       }
     }
   }
+}

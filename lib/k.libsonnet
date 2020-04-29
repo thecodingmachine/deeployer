@@ -1,1 +1,1 @@
-import "../vendor/ksonnet.beta.4/k.libsonnet"
+import '../vendor/ksonnet.beta.4/k.libsonnet'
