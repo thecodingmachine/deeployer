@@ -380,6 +380,12 @@ Download and install AJV:
 $ sudo npm install -g ajv-cli
 ```
 
+Download and install Jsonlint:
+
+```bash
+$ sudo npm install -g jsonlint
+```
+
 Before submitting a PR:
 
 - run the tests:

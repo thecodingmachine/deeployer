@@ -46,6 +46,9 @@ jobs:
       - name: "Install ajv"
         run: npm install -g ajv-cli
 
+      - name: "Install jsonlint"
+        run: npm install jsonlint -g
+
       - name: "Download JB"
         run: |
           curl -o jb -L https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.3.1/jb-linux-amd64
@@ -58,6 +61,9 @@ jobs:
       - name: "Run tests"
         run: ./run_tests.sh
         working-directory: "tests"
+
+      - name: "Validating JSON & *SONNET files"
+        run: ./validator.sh
 
       - name: "Check coding style in deeployer lib"
         run: jsonnetfmt --test *.*sonnet
