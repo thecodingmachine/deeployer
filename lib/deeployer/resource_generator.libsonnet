@@ -20,7 +20,7 @@
   /**
    * Returns the list of ports to listen to by merging "ports" with the "containerPort" of the host section
    */
-  local getPorts = function(container)
+  local getPorts = function(container) 
     std.set(  // ports are a "set" (an array of unique values)
       (if std.objectHas(container, 'ports') then container.ports else []) +
       // TODO: if host is defined and containerPort is not defined, put port 80 unless "ports" has only 1 element

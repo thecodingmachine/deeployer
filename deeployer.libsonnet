@@ -144,4 +144,13 @@
 
   //Pod4 ...
 
+  config: {
+    registryCredentials:{
+      secret_name: "",
+      url: "",
+      user: "",
+      password: "",
+    },
+  },
+
 }
