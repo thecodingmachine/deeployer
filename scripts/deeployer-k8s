@@ -132,3 +132,4 @@ elif [[ "$COMMAND" == "show" ]]; then
 else
   tk $COMMAND --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" "$DIR"
 fi
+ 
