@@ -5,7 +5,7 @@ set -e
 usage()
 {
     echo "usage: deeployer-k8s show [deeployer.json] | [-h]]"
-    echo "       deeployer-k8s apply [--namespace somenamespace] [--no-wait] [--timeout 600s] [deeployer.json] | [-h]]"
+    echo "       deeployer-k8s apply [--namespace somenamespace] [--docker-registy someregistryname] [--no-wait] [--timeout 600s] [deeployer.json] | [-h]]"
 }
 
 # Running this at the very beginning, before we declare any environment variable
@@ -109,8 +109,18 @@ if [[ "$COMMAND" == "apply" ]]; then
   
   # Create a Secret by providing credentials on the command line
 
-  #kubectl -n ${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG} create secret docker-registry tcmregistry --docker-username=ci.gitlab@thecodingmachine.com --docker-password=$CI_PASSWD --docker-server=git.thecodingmachine.com:444
+while [ "$2" != "" ]; do
+    case $2 in
+        -d | --docker-registry )      shift
+                                      DOCKER_REGISTRY=$2
+                                      ;;
+    esac
+    shift
+done
 
+  kubectl -n ${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG} create secret docker-registry $DOCKER_REGISTRY  --docker-username=$3 --docker-password=$4 --docker-server=$5
+ 
+ ###
   tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" --dangerous-auto-approve "$DIR"
 
   if [[ "$WAIT" == "1" ]]; then
