@@ -265,6 +265,18 @@ $ deeployer-k8s apply --namespace=target-namespace
 Important: if you are using Deeployer locally, Deeployer will not use your Kubectl config by default. You need to pass
 the Kubectl configuration as an environment variable.
 
+Finally, you can delete a complete namespace using:
+
+```console 
+$ deeployer-k8s delete --namespace=target-namespace
+```
+
+This is equivalent to using:
+
+```console 
+$ kubectl delete namespace target-namespace
+```
+
 #### Connecting to a "standard" environment
 
 If a "kubeconfig" file is enough to connect to your environement, you can connect to your cluster
