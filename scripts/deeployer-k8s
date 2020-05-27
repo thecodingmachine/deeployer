@@ -84,11 +84,11 @@ if [[ "$COMMAND" != "delete" ]]; then
     exit 1
   fi
   set -e
+
+  config=$(cat "$DEEPLOYER_FILE")
+
+  TIMESTAMP=$(date +%s)
 fi
-
-config=$(cat "$DEEPLOYER_FILE")
-
-TIMESTAMP=$(date +%s)
 
 if [[ "$COMMAND" == "apply" ]]; then
   if [[ "$NAMESPACE" == "" ]]; then
