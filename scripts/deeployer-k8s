@@ -61,28 +61,30 @@ while [ "$1" != "" ]; do
     shift
 done
 
-if [[ "$DEEPLOYER_FILE" == "" ]]; then
-  echo "Cannot find deeployer.libsonnet or deeployer.json in the current directory. Create those files or pass the name of the deeployer configuration file in argument to deeployer-k8s."
-  exit 1;
-fi
-if [ ! -f "$DEEPLOYER_FILE" ]; then
-  echo "Cannot find deeployer configuration file \"$DEEPLOYER_FILE\""
-  exit 1;
-fi
+if [[ "$COMMAND" != "delete" ]]; then
+  if [[ "$DEEPLOYER_FILE" == "" ]]; then
+    echo "Cannot find deeployer.libsonnet or deeployer.json in the current directory. Create those files or pass the name of the deeployer configuration file in argument to deeployer-k8s."
+    exit 1;
+  fi
+  if [ ! -f "$DEEPLOYER_FILE" ]; then
+    echo "Cannot find deeployer configuration file \"$DEEPLOYER_FILE\""
+    exit 1;
+  fi
 
-# Get the directory of the script (resolving any symlink)
-DIR="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" >/dev/null 2>&1 && pwd -P )"
+  # Get the directory of the script (resolving any symlink)
+  DIR="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" >/dev/null 2>&1 && pwd -P )"
 
-# Let's validate the Deeployer file
-jsonnet $DEEPLOYER_FILE --ext-code "env=$JSON_ENV" --ext-str timestamp="2020-05-05 00:00:00" > /tmp/deeployer.json
-set +e
-OUTPUT=`ajv test -s $DIR/../deeployer.schema.json -d /tmp/deeployer.json --valid`
-if [[ $? != 0 ]]; then
-  echo "$OUTPUT"
-  echo -e "\e[31m❌\e[39m Your configuration file '$DEEPLOYER_FILE' has an invalid format. See the message above for details."
-  exit 1
+  # Let's validate the Deeployer file
+  jsonnet $DEEPLOYER_FILE --ext-code "env=$JSON_ENV" --ext-str timestamp="2020-05-05 00:00:00" > /tmp/deeployer.json
+  set +e
+  OUTPUT=`ajv test -s $DIR/../deeployer.schema.json -d /tmp/deeployer.json --valid`
+  if [[ $? != 0 ]]; then
+    echo "$OUTPUT"
+    echo -e "\e[31m❌\e[39m Your configuration file '$DEEPLOYER_FILE' has an invalid format. See the message above for details."
+    exit 1
+  fi
+  set -e
 fi
-set -e
 
 config=$(cat "$DEEPLOYER_FILE")
 
