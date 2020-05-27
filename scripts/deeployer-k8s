@@ -4,8 +4,9 @@ set -e
 
 usage()
 {
-    echo "usage: deeployer-k8s show [deeployer.json] | [-h]]"
-    echo "       deeployer-k8s apply [--namespace somenamespace] [--no-wait] [--timeout 600s] [deeployer.json] | [-h]]"
+    echo "usage: deeployer-k8s show [deeployer.json] | [-h]"
+    echo "       deeployer-k8s apply --namespace somenamespace [--no-wait] [--timeout 600s] [deeployer.json]"
+    echo "       deeployer-k8s delete --namespace somenamespace"
 }
 
 # Running this at the very beginning, before we declare any environment variable
@@ -89,7 +90,7 @@ TIMESTAMP=$(date +%s)
 
 if [[ "$COMMAND" == "apply" ]]; then
   if [[ "$NAMESPACE" == "" ]]; then
-    echo "When using 'apply', you must pass a namespace in paramater"
+    echo "When using 'apply', you must pass a namespace in parameter"
     echo "  deeployer-k8s apply --namespace foobar"
     exit 1;
   fi
@@ -112,6 +113,20 @@ if [[ "$COMMAND" == "apply" ]]; then
   if [[ "$WAIT" == "1" ]]; then
     kubectl -n "$NAMESPACE" wait deployment --all=true --for=condition=Available --timeout=$TIMEOUT
   fi
+elif [[ "$COMMAND" == "delete" ]]; then
+  if [[ "$NAMESPACE" == "" ]]; then
+    echo "When using 'delete', you must pass a namespace in parameter"
+    echo "  deeployer-k8s delete --namespace foobar"
+    exit 1;
+  fi
+
+  # Let's connect (if we are in the Docker container)
+  if [[ -f "/usr/local/bin/connect" ]]; then
+    /usr/local/bin/connect
+  fi
+
+  # Let's delete the namespace
+  kubectl delete namespace "$NAMESPACE"
 elif [[ "$COMMAND" == "show" ]]; then
   # --dangerous-allow-redirect is needed for using the command in a Docker container
   tk show --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" "$DIR" --dangerous-allow-redirect
