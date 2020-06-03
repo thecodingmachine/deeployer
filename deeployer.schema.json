@@ -26,31 +26,10 @@
               }
             },
             "host": {
-              "type": "object",
-              "properties": {
-                "url": {
-                  "type": "string",
-                  "format": "hostname"
-                },
-                "containerPort": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 65535
-                },
-                "https": {
-                  "type": "string",
-                  "enum": [
-                    "enable",
-                    "disable",
-                    "force"
-                  ]
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "url"
-              ]
-            },
+              "type": "string",
+              "minLength": 1
+
+                          },
             "volumes": {
               "type": "object",
               "additionalProperties": false,
@@ -126,25 +105,25 @@
         "registryCredentials": {
           "type":"object",
           "properties": {
-            "secret_name": {
-              "type": "string",
-              "minLength": 1
-            },
-            "url":{
-              "type": "string",
-              "format": "hostname"
-            },
-            "user": {
-              "type": "string",
-              "minLength": 1
-            },
-            "password": {
-              "type": "string",
-              "minLength": 1
+            "registryCredentials": {
+              "type": "object",
+              "properties": {
+                "url":{
+                  "type": "string",
+                  "format": "hostname"
+                },
+                "user": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
             }
           }
         }
-
       }
     }
   }

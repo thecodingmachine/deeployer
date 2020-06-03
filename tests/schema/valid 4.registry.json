@@ -1,6 +1,5 @@
 {
     "$schema": "../../deeployer.schema.json",
-    
     "containers": {
         "elasticsearch": {
 
@@ -17,7 +16,9 @@
             },
 
 
-            "host": "test.thecodingmachine.com",
+            "host": {
+                "url": "test.thecodingmachine.com"
+            },
 
             "volumes" : {},
 
