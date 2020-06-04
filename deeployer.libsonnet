@@ -13,7 +13,7 @@
         APP_ENV: 'dev',
       },
 
-      host: env.NAMESPACE + '.test.thecodingmachine.com',
+      host: {env.NAMESPACE + '.test.thecodingmachine.com'},
 
 
       volumes: {

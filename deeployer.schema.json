@@ -26,10 +26,31 @@
               }
             },
             "host": {
-              "type": "string",
-              "minLength": 1
-
-                          },
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "hostname"
+                },
+                "containerPort": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535
+                },
+                "https": {
+                  "type": "string",
+                  "enum": [
+                    "enable",
+                    "disable",
+                    "force"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "url"
+              ]
+            },
             "volumes": {
               "type": "object",
               "additionalProperties": false,
