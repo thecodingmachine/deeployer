@@ -11,14 +11,17 @@
     }
   },
   "config": {
-    k8sextensions(k8sConf):: k8sConf + {
-              back+: {
+    k8sextension(k8sConf)::
+            k8sConf + {
+              phpmyadmin+: {
                 deployment+: {
                   spec+: {
                     template+: {
-                      annotations+: {
-                        "prometheus.io/port": "8080",
-                        "prometheus.io/scrape": "true"
+                      metadata+: {
+                        annotations+: {
+                          "prometheus.io/port": "8080",
+                          "prometheus.io/scrape": "true"
+                        }
                       }
                     }
                   }

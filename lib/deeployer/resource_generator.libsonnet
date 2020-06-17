@@ -180,7 +180,11 @@
   ,
 
   deeployer:: {
-    generateResources(config):: std.mapWithKey(f, config.containers) + issuer(config),
+    generateResourcesWithoutExtension(config):: std.mapWithKey(f, config.containers) + issuer(config),
+    generateResources(config):: if std.objectHas(config, 'config') && std.objectHasAll(config.config, 'k8sextension') && std.isFunction(config.config.k8sextension) then
+          config.config.k8sextension(self.generateResourcesWithoutExtension(config))
+        else
+          self.generateResourcesWithoutExtension(config)
+        ,
   },
-
 }
