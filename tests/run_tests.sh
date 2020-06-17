@@ -18,6 +18,7 @@ expectValue "Testing the presence of a timestamp label to force reloading" "host
 expectValue "Testing the presence of a PVC" "volume.json" ".generatedConf.mysql.pvcs.data.spec.resources.requests.storage" '"1G"' ../scripts/main.jsonnet
 assertValidK8s "host.json" ../scripts/main.jsonnet
 assertValidK8s "volume.json" ../scripts/main.jsonnet
+expectValue "Testing the presence of an annotation" "k8sextension.libsonnet" ".generatedConf.phpmyadmin.ingress.metadata.annotations[\"prometheus.io/port\"]" '"8080"' ../scripts/main.jsonnet
 
 # Docker-compose tests
 echo "Starting docker-compose tests"
