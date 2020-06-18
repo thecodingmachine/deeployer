@@ -238,6 +238,67 @@ In order to automatically get a certificate for your HTTPS website, you need to:
 Please note that if you are using Kubernetes, you will need in addition to install CertManager in your cluster.
 [See the relevant Kubernetes documentation below](#configuring-your-kubernetes-cluster-to-support-https) 
 
+### Customizing Kubernetes resources
+
+Deeployer's goal is to allow you to describe a complete environment in a simple JSON file. It simplifies a lot the 
+configuration by making a set of common assumptions on your configuration. Of course, the JSON config file does not
+let you express everything you can in a raw Kubernetes environment. This is by design.
+
+However, there are times when you might need a very specific K8S feature. In this case, you can use JSONNET functions
+to dynamically alter the generated K8S configuration files.
+
+To do this, you will need to use a `deeployer.libsonnet` configuration file instead of a `deeployer.json` configuration
+file.
+
+You can then use the hidden `config.k8sextension` field to alter the generated configuration.
+In the example below, we are adding 2 annotations to the container of the deployment:
+
+```libsonnet
+{
+  "containers": {
+    "phpmyadmin": {
+      "image": "phpmyadmin",
+      "ports": [
+        80
+      ],
+      "host": {
+        "url": "myhost.com"
+      }
+    }
+  },
+  "config": {
+    k8sextension(k8sConf)::
+      k8sConf + {
+        phpmyadmin+: {
+          deployment+: {
+            spec+: {
+              template+: {
+                metadata+: {
+                  annotations+: {
+                    "prometheus.io/port": "8080",
+                    "prometheus.io/scrape": "true"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+  }
+}
+``` 
+
+What is going on here? We are describing in the config a `k8sextension` function.
+This JSONNET function is passed a JSON object representing the complete list of all the Kubernetes resources.
+Using JSONNET, we extend that list to add annotations in one given container.
+
+Good to know:
+
+Resources stored in the JSON config object passed to `k8sextension` is on two levels. 
+
+- The first level is the name of the container (`phpmyadmin` in the example above)
+- The second level is the name of the resource type we want to target (here, a `deployment`)
+
 ## Usage
 
 ### Deploying using Kubernetes
@@ -264,6 +325,18 @@ $ deeployer-k8s apply --namespace=target-namespace
 
 Important: if you are using Deeployer locally, Deeployer will not use your Kubectl config by default. You need to pass
 the Kubectl configuration as an environment variable.
+
+Finally, you can delete a complete namespace using:
+
+```console 
+$ deeployer-k8s delete --namespace=target-namespace
+```
+
+This is equivalent to using:
+
+```console 
+$ kubectl delete namespace target-namespace
+```
 
 #### Connecting to a "standard" environment
 
