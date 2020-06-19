@@ -18,6 +18,7 @@ expectValue "Testing the presence of a timestamp label to force reloading" "host
 expectValue "Testing the presence of a PVC" "volume.json" ".generatedConf.mysql.pvcs.data.spec.resources.requests.storage" '"1G"' ../scripts/main.jsonnet
 assertValidK8s "host.json" ../scripts/main.jsonnet
 assertValidK8s "volume.json" ../scripts/main.jsonnet
+expectValue "Testing the presence of a registry credential" "registryCredentials.json" ".generatedConf.phpmyadmin.deployment.spec.template.spec.imagePullSecrets[0].name" '"aa827ffc96199a7071140cc2267bc1b1a"' ../scripts/main.jsonnet
 
 # Docker-compose tests
 echo "Starting docker-compose tests"
