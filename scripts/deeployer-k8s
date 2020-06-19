@@ -110,7 +110,7 @@ if [[ "$COMMAND" == "apply" ]]; then
   # Let's create the namespace if it does not exists
   kubectl create namespace "$NAMESPACE" || true
 
-  php runParseConfigForCredentials.php /tmp/deeployer.json "$NAMESPACE" | bash
+  php /deeployer/scripts/runParseConfigForCredentials.php /tmp/deeployer.json "$NAMESPACE" | bash
 
   tk apply --extCode "config=$config" --extCode "env=$JSON_ENV" --extVar "timestamp=$TIMESTAMP" --dangerous-auto-approve "$DIR"
 
