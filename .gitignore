@@ -1,2 +1,3 @@
 /lib/deeployer/test_tanka.libsonnet.dist
 /vendor
+composer.lock

@@ -62,6 +62,9 @@ jobs:
         run: ./run_tests.sh
         working-directory: "tests"
 
+      - name: "Run phpunit tests"
+        run: phpunit tests/parseConfigForCredentialsTest.php
+
       - name: "Validating JSON & *SONNET files"
         run: ./validator.sh
 

@@ -33,7 +33,7 @@
     else if std.objectHas(container.host, 'containerPort') then container.host.containerPort
     else
       if getPorts(container) == [] then error 'For container "' + deploymentName + '", host "' + container.host.url + '" needs a port to bind to. Please provide a containerPort in the "host" section.'
-      else if std.length(getPorts(container)) > 1 then error ' For service "' + deploymentName + '", there is a host defined but several ports open. Please provide a containerPort in the "host" section.'
+      else if std.length(getPorts(container)) > 1 then error ' For service "' + deploymentName + '", there is a host defined but several ports open. PleaseNouvelle liste provide a containerPort in the "host" section.'
       else getPorts(container)[0]
   ,
 
@@ -58,7 +58,7 @@
   local environmentRequiresHttps = function(containers)
     std.length(std.filter(function(containerName) containerHasHttps(containers[containerName]), std.objectFields(containers))) > 0,
 
-  local f = function(deploymentName, data)
+  local f = function(config, deploymentName, data)
     {
 
       deployment: deployment.new(
@@ -84,7 +84,10 @@
                     ]
                   ) +
                   deployment.mixin.spec.strategy.withType('Recreate') +
-                  deployment.mixin.spec.template.spec.withImagePullSecrets([ImagePullSecret.new() + ImagePullSecret.withName('tcmregistry')],) +
+                  (if std.objectHas(config, 'config') && std.objectHas(config.config, 'registryCredentials') then
+                     deployment.mixin.spec.template.spec.withImagePullSecrets([(ImagePullSecret.new() + ImagePullSecret.withName('a' + std.md5(registryUrl))) for registryUrl in std.objectFields(config.config.registryCredentials)],)
+                   else {})
+                  +
                   // we add the current date to a random label to force a redeployment, even if the container name did not change.
                   // TODO: in the future, we might want to add this timestamp only for images that we are in charge of.
                   deployment.mixin.spec.template.metadata.withLabelsMixin({ deeployerTimestamp: std.extVar('timestamp') }),
@@ -180,10 +183,13 @@
   ,
 
   deeployer:: {
-    generateResourcesWithoutExtension(config):: std.mapWithKey(f, config.containers) + issuer(config),
+    generateResourcesWithoutExtension(config)::
+      local generateContainer = function(deploymentName, data) f(config, deploymentName, data);
+      std.mapWithKey(generateContainer, config.containers) + issuer(config),
     generateResources(config):: if std.objectHas(config, 'config') && std.objectHasAll(config.config, 'k8sextension') && std.isFunction(config.config.k8sextension) then
       config.config.k8sextension(self.generateResourcesWithoutExtension(config))
     else
       self.generateResourcesWithoutExtension(config),
   },
+
 }
