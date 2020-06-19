@@ -85,9 +85,9 @@
                   ) +
                   deployment.mixin.spec.strategy.withType('Recreate') +
                   (if std.objectHas(config, 'config') && std.objectHas(config.config, 'registryCredentials') then
-                    deployment.mixin.spec.template.spec.withImagePullSecrets([(ImagePullSecret.new() + ImagePullSecret.withName('a'+std.md5(registryUrl))) for registryUrl in std.objectFields(config.config.registryCredentials)],) 
-                  else {})
-                    +
+                     deployment.mixin.spec.template.spec.withImagePullSecrets([(ImagePullSecret.new() + ImagePullSecret.withName('a' + std.md5(registryUrl))) for registryUrl in std.objectFields(config.config.registryCredentials)],)
+                   else {})
+                  +
                   // we add the current date to a random label to force a redeployment, even if the container name did not change.
                   // TODO: in the future, we might want to add this timestamp only for images that we are in charge of.
                   deployment.mixin.spec.template.metadata.withLabelsMixin({ deeployerTimestamp: std.extVar('timestamp') }),
@@ -183,7 +183,7 @@
   ,
 
   deeployer:: {
-    generateResourcesWithoutExtension(config):: 
+    generateResourcesWithoutExtension(config)::
       local generateContainer = function(deploymentName, data) f(config, deploymentName, data);
       std.mapWithKey(generateContainer, config.containers) + issuer(config),
     generateResources(config):: if std.objectHas(config, 'config') && std.objectHasAll(config.config, 'k8sextension') && std.isFunction(config.config.k8sextension) then
