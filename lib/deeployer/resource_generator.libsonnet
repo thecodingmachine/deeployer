@@ -182,11 +182,7 @@
       {}
   ,
 
-<<<<<<< HEAD
-  deeployer:: {
-=======
 deeployer:: {
->>>>>>> 86b3284338d248b21088b23d3645c6e989ae30f2
     generateResourcesWithoutExtension(config)::
       local generateContainer = function(deploymentName, data) f(config, deploymentName, data);
       std.mapWithKey(generateContainer, config.containers) + issuer(config),
