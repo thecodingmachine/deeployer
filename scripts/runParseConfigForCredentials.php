@@ -1,6 +1,6 @@
 <?php
 
-require_once 'runParseConfigForCredentials.php';
+require_once __DIR__.'/runParseConfigForCredentials.php';
 
 /**
  * This parse the config to find credentials needed for a named registry
