@@ -27,6 +27,16 @@
       if std.objectHas(container, 'host') && std.objectHas(container.host, 'containerPort') then [container.host.containerPort] else []
     ),
 
+  /**
+   * This function is written as a middleware to be easily plugged at the beginning of the script
+   */
+  local checkVersionNumber = function(config, currentVersionNumber, next)
+    if !(config.version == currentVersionNumber) then
+      error 'Mismatch in version number'
+    else
+      next
+  ,
+
   local getHttpPort = function(container, deploymentName)
     if !std.objectHas(container, 'host') then
       error 'Unexpected call to getHttpPort if there is no host: ' + container
@@ -185,7 +195,7 @@
   deeployer:: {
     generateResourcesWithoutExtension(config)::
       local generateContainer = function(deploymentName, data) f(config, deploymentName, data);
-      std.mapWithKey(generateContainer, config.containers) + issuer(config),
+      checkVersionNumber(config, '1.0', std.mapWithKey(generateContainer, config.containers) + issuer(config)),
     generateResources(config):: if std.objectHas(config, 'config') && std.objectHasAll(config.config, 'k8sextension') && std.isFunction(config.config.k8sextension) then
       config.config.k8sextension(self.generateResourcesWithoutExtension(config))
     else

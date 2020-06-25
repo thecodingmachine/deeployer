@@ -18,6 +18,7 @@ The Deeployer config file contains the list of containers that makes your enviro
 **deeployer.json**
 ```json
 {
+  "version": "1.0",
   "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
   "containers": {
      "mysql": {
@@ -94,6 +95,7 @@ Here is a sample file:
 {
   local mySqlPassword = "secret",
   local baseUrl = "myapp.localhost",
+  "version": "1.0",
   "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
   "containers": {
      "mysql": {
@@ -129,6 +131,7 @@ using 2 files:
 ```jsonnnet
 {
   local mySqlPassword = "secret",
+  "version": "1.0",
   "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
   "containers": {
      "mysql": {
@@ -147,6 +150,7 @@ using 2 files:
 local prod = import "deeployer.libsonnet";
 local baseUrl = "myapp.localhost";
 prod + {
+  "version": "1.0",
   "containers"+: {
     "phpmyadmin": {
       "image": "phpmyadmin/phpmyadmin:5.0",
@@ -176,6 +180,7 @@ variables. Deeployer can access environment variables using the Jsonnet "env" ex
 local env = std.extVar("env");
 {
   local mySqlPassword = "secret",
+  "version": "1.0",
   "containers": {
      "mysql": {
        "image": "mysql:8.0",
@@ -205,6 +210,7 @@ Deeployer offers HTTPS support out of the box using Let's encrypt.
 **deeployer.json**
 ```json
 {
+  "version": "1.0",
   "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
   "containers": {
     "phpmyadmin": {
@@ -255,6 +261,7 @@ In the example below, we are adding 2 annotations to the container of the deploy
 
 ```libsonnet
 {
+  "version": "1.0",
   "containers": {
     "phpmyadmin": {
       "image": "phpmyadmin",
