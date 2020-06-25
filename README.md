@@ -209,8 +209,7 @@ Deeployer offers HTTPS support out of the box using Let's encrypt.
 **deeployer.json**
 ```json
 {
-  "
-  ": "1.0",
+  "version": "1.0",
   "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
   "containers": {
     "phpmyadmin": {
