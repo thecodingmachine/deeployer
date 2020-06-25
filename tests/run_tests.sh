@@ -7,6 +7,8 @@ set -e
 # Kubernetes tests
 echo "Starting Kubernetes tests"
 
+expectError "Testing creation of host with a low version number" "host_with_low_version.json" "Mismatch in version number"  ../scripts/main.jsonnet
+
 expectError "Testing creation of host without a port" "host_without_port.json" "For container \"phpmyadmin\", host \"myhost.com\" needs a port to bind to. Please provide a containerPort in the \"host\" section." ../scripts/main.jsonnet
 expectValue "Testing creation of ingress when a host is added" "host.json" ".generatedConf.phpmyadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
 expectValue "Testing containerPort of ingress when a host is added" "host_with_container_port.json" ".generatedConf.phpmyadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
@@ -31,6 +33,8 @@ expectValue "Testing creation of Traefik when a host is added" "docker-compose-p
 echo "Starting JsonSchema tests"
 
 ajv test -s ../deeployer.schema.json -d schema/valid.json --valid
+ajv test -s ../deeployer.schema.json -d schema/invalid_without_version.json --invalid
+ajv test -s ../deeployer.schema.json -d schema/invalid_with_wrong_version.json --invalid
 ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_with_unknown_properties.json --invalid
 ajv test -s ../deeployer.schema.json -d schema/invalid_container_with_wrong_declared_envVars.json --invalid
 ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_without_image.json --invalid
