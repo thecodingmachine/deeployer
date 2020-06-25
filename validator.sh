@@ -27,5 +27,4 @@ jsonlint *.json -q
 
 cd .. #location : root/
 jsonlint *.json -q
-jsonnetfmt deeployer.libsonnet >/dev/null
 
