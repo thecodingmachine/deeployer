@@ -19,7 +19,12 @@ RUN apt-get update &&\
     apt-get install -y --no-install-recommends gnupg &&\
     curl -sL https://deb.nodesource.com/setup_12.x | bash - &&\
     apt-get update &&\
-    apt-get install -y --no-install-recommends nodejs jq
+    apt-get install -y --no-install-recommends nodejs jq docker-compose curl php-dom php-mbstring php-zip php-curl unzip
+    
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
+    php composer-setup.php --install-dir=bin --filename=composer &&\
+    php -r "unlink('composer-setup.php');"
+
 
 # install AJV for schema validation
 RUN npm install -g ajv-cli

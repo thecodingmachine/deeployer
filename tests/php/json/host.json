@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "containers": {
+    "php": {
+      "image": "thecodingmachine/php:7.4-v3-apache",
+      "host": {
+        "url": "myhost.com"
+      }
+    },
+    "phpmyadmin": {
+      "image": "phpmyadmin",
+      "ports": [
+        80
+      ],
+      "host": {
+        "url": "phpmyadmin.myhost.com"
+      }
+    }
+  }
+}
