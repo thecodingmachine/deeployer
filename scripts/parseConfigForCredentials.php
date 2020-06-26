@@ -10,7 +10,7 @@ function parseConfigForCredentials(string $paramPath, string $namespace) {
             $name = $credentialsData['user'];
             $password = $credentialsData['password'];
 
-            yield "kubectl -n $namespace delete secret $slugifiedName";
+            yield "kubectl -n $namespace delete secret $slugifiedName\n";
             yield "kubectl -n $namespace create secret docker-registry $slugifiedName --docker-server=$url --docker-username=$name --docker-password='$password' --docker-email=$name\n";
         }
 
