@@ -7,12 +7,7 @@ namespace App\utils;
 class ComposeFileGenerator
 {
     public const TmpFilePath = '/tmp/docker-compose.json';
-
-
-    /**
-     * @param mixed[] $config
-     * @return mixed[]
-     */
+    
     public function createConfig(array $config): array
     {
         $json = [];
@@ -20,20 +15,13 @@ class ComposeFileGenerator
         $json['version'] = $config['version'];
 
         $json['services'] = [
-            //todo: add traefik container
+            'traefik' => $this->createTraefikConf()
         ];
         foreach ($config['containers'] as $serviceName => $containerConfig) {
-            $serviceConfig = [
-                'image' => $containerConfig['image']
-            ];
+            $serviceConfig = $this->createServiceConfig($containerConfig);
 
             if (isset($containerConfig['host'])) {
-                $host = $containerConfig['host']['url']; //todo: throw exception if not found
-                $traefikLabels = [
-                    'traefik.enable=true',
-                    "traefik.http.routers.front_router.rule=Host(`$host`)"
-                ];
-                $serviceConfig['labels'] = $traefikLabels;
+                $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']);
             }
 
             $json['services'][$serviceName] = $serviceConfig;
@@ -41,9 +29,6 @@ class ComposeFileGenerator
         return $json;
     }
 
-    /**
-     * @param mixed[] $config
-     */
     public function createFile(array $config): string
     {
         $json = $this->createConfig($config);        
@@ -52,6 +37,32 @@ class ComposeFileGenerator
             throw new \RuntimeException('Error when trying to create the docker-compose file');
         }
         return self::TmpFilePath;
+    }
+    
+    public function createTraefikConf(): array
+    {
+        //todo: create traefik container
+        return [];
+    }
+    
+    public function createServiceConfig(array $containerConfig): array
+    {
+        //todo app more options
+        return [
+            'image' => $containerConfig['image']
+        ];
+    }
+    
+    public function createTraefikLabels(array $hostConfig): array
+    {
+        if (!isset($hostConfig['url'])) {
+            throw new \RuntimeException('No parameter url found in the host config: '. var_export($hostConfig, true));
+        }
+        $host = $hostConfig['url'];
+        return [
+            'traefik.enable=true',
+            "traefik.http.routers.front_router.rule=Host(`$host`)"
+        ];
     }
 
 }
