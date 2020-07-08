@@ -17,6 +17,12 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v2.0.0"
 
+      - name: "Install PHP with extensions"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "7.2"
+
       - name: "Download JSONNET"
         run: |
           curl -o jsonnet.tar.gz -L https://github.com/google/jsonnet/releases/download/v0.15.0/jsonnet-bin-v0.15.0-linux.tar.gz
@@ -77,6 +83,17 @@ jobs:
       - name: "Check coding style in deeployer lib"
         run: jsonnetfmt --test *.*sonnet
         working-directory: "lib/deeployer"
+
+      - name: "Archive code coverage results"
+        uses: "actions/upload-artifact@v1"
+        with:
+          name: "build"
+          path: "build"
+
+      - name: "upload the coverage to codecov"
+        uses: codecov/codecov-action@v1 # 
+        with:
+          fail_ci_if_error: true # optional (default = false)
 
   build-and-test:
     name: "Build and test"
