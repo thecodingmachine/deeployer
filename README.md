@@ -387,7 +387,8 @@ Deeployer can be run via Docker. Installation is as easy as adding a few aliases
 
 `~/.bashrc`
 ```console
-alias deeployer-k8s="docker run --rm -it -e \"JSON_ENV=\$(jq -n env)\" -v $(pwd):/var/app thecodingmachine/deeployer:latest deeployer-k8s"
+alias deeployer-k8s="docker run --rm -it -e \"JSON_ENV=\$(jq -n env)\" thecodingmachine/deeployer:latest deeployer-k8s"
+alias deeployer-compose="docker run --rm -it -e \"JSON_ENV=\$(jq -n env)\" -v $(pwd):/var/app -v /var/run/docker.sock:/var/run/docker.sock thecodingmachine/deeployer:latest deeployer-compose"
 alias deeployer-self-update="docker pull thecodingmachine/deeployer:latest"
 ```
 

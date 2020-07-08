@@ -3,14 +3,14 @@
 namespace App\Tests;
 
 use PHPUnit\Framework\TestCase;
-require_once __DIR__.'/../scripts/parseConfigForCredentials.php';
+require_once __DIR__ . '/../../scripts/parseConfigForCredentials.php';
 
-class parseConfigForCredentialsTest extends TestCase
+class ParseConfigForCredentialsTest extends TestCase
 {
     public function testConfigIsparsed(): void
     {
         $returnArray = [];
-        foreach (parseConfigForCredentials(__DIR__.'/registryCredentials.json', 'toto') as $command) {
+        foreach (parseConfigForCredentials(__DIR__ . '/../registryCredentials.json', 'toto') as $command) {
             $returnArray[] = $command;
         }
         

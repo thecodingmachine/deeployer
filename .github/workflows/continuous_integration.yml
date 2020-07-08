@@ -57,13 +57,19 @@ jobs:
 
       - name: "Install dependencies"
         run: jb install
+        
+      - name: "Install php dependencies"
+        run: composer install
 
       - name: "Run tests"
         run: ./run_tests.sh
         working-directory: "tests"
 
+      - name: "Run phpstan"
+        run: composer phpstan
+
       - name: "Run phpunit tests"
-        run: phpunit tests/parseConfigForCredentialsTest.php
+        run: composer phpunit
 
       - name: "Validating JSON & *SONNET files"
         run: ./validator.sh
