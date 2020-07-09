@@ -31,8 +31,8 @@ class ComposeFileGenerator
 
     public function createFile(array $config): string
     {
-        $json = $this->createConfig($config);        
-        $returnCode = file_put_contents(self::TmpFilePath, $json);
+        $dockerFileConfig = $this->createConfig($config);
+        $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
         if ($returnCode === false) {
             throw new \RuntimeException('Error when trying to create the docker-compose file');
         }

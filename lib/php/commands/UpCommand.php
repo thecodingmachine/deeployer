@@ -5,6 +5,7 @@ namespace App\commands;
 
 
 use App\utils\ComposeFileGenerator;
+use App\utils\ConfigFileFinder;
 use App\utils\ConfigGenerator;
 use App\utils\Executor;
 use Symfony\Component\Console\Command\Command;
@@ -23,10 +24,15 @@ class UpCommand extends Command
      * @var ComposeFileGenerator
      */
     private $composeFileGenerator;
+    /**
+     * @var ConfigFileFinder
+     */
+    private $configFileFinder;
 
     public function __construct(string $name = null)
     {
         parent::__construct($name);
+        $this->configFileFinder = new ConfigFileFinder();
         $this->configGenerator = new ConfigGenerator();
         $this->composeFileGenerator = new ComposeFileGenerator();
     }
@@ -44,7 +50,7 @@ class UpCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $path = ''; //todo get path
+        $path = $this->configFileFinder->findFile();
         $config = $this->configGenerator->getConfig($path);
         $filePath = $this->composeFileGenerator->createFile($config);
         
