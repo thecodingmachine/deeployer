@@ -45,7 +45,7 @@ class ExportCommand extends Command
         $output->writeln('Exporting your config in docker-compose format...');
         $path = $this->configFileFinder->findFile();
         $config = $this->configGenerator->getConfig($path);
-        $dockerComposeConfig = $this->composeFileGenerator->createConfig($config);
+        $dockerComposeConfig = $this->composeFileGenerator->createDockerComposeConfig($config);
         $code = file_put_contents('docker-compose.json', json_encode($dockerComposeConfig, JSON_PRETTY_PRINT));
         if ($code === false) {
             throw new \RuntimeException('Error when creating the docker-compose file.');

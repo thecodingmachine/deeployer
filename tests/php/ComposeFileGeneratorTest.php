@@ -9,12 +9,24 @@ use PHPUnit\Framework\TestCase;
 
 class ComposeFileGeneratorTest extends TestCase
 {
-    //todo
     public function testTraefikConfig(): void
     {
         $generator = new ComposeFileGenerator();
         $result = $generator->createTraefikConf();
-        $this->assertEquals([], $result);
+        $expected = [
+            "image" => "traefik:2.0",
+            "command" => [
+                "--providers.docker",
+                "--providers.docker.exposedByDefault=false"
+            ],
+            "ports" => [
+                "80:80"
+            ],
+            "volumes" => [
+                "/var/run/docker.sock:/var/run/docker.sock"
+            ]
+        ];
+        $this->assertEquals($expected, $result);
     }
 
     public function testServiceConfigWithoutLabel(): void
@@ -26,6 +38,46 @@ class ComposeFileGeneratorTest extends TestCase
         $result = $generator->createServiceConfig($config);
         $this->assertEquals([
             'image' => 'myimage'
+        ], $result);
+    }
+
+    public function testServiceConfigWithVolumes(): void
+    {
+        $generator = new ComposeFileGenerator();
+        $config= [
+            'image' => 'myimage',
+            'volumes' => [
+                '/var/www/html:/var/www/html',
+                '/var/www/:/var/www',
+            ]
+        ];
+        $result = $generator->createServiceConfig($config);
+        $this->assertEquals([
+            'image' => 'myimage',
+            'volumes' => [
+                '/var/www/html:/var/www/html',
+                '/var/www/:/var/www',
+            ]
+        ], $result);
+    }
+
+    public function testServiceConfigWithEnvVariables(): void
+    {
+        $generator = new ComposeFileGenerator();
+        $config= [
+            'image' => 'myimage',
+            'env' => [
+                'startup_command' => 'yarn build',
+                'dummy_variable' => 'dummy_value'
+            ]
+        ];
+        $result = $generator->createServiceConfig($config);
+        $this->assertEquals([
+            'image' => 'myimage',
+            'environment' => [
+                'startup_command' => 'yarn build',
+                'dummy_variable' => 'dummy_value'
+            ]
         ], $result);
     }
 
@@ -81,7 +133,7 @@ class ComposeFileGeneratorTest extends TestCase
 
             ]
         ];
-        $createdConfig = $generator->createConfig($config);
+        $createdConfig = $generator->createDockerComposeConfig($config);
         $this->assertTrue(isset($createdConfig['services']['traefik']));
         $this->assertTrue(isset($createdConfig['services']['php']));
         $this->assertTrue(isset($createdConfig['services']['mysql']));
