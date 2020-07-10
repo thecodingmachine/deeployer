@@ -8,30 +8,30 @@ class ComposeFileGenerator
 {
     public const TmpFilePath = '/tmp/docker-compose.json';
     
-    public function createConfig(array $config): array
+    public function createDockerComposeConfig(array $deeployerConfig): array
     {
-        $json = [];
+        $dockerComposeConfig = ['a' => 1];
 
-        $json['version'] = $config['version'];
+        $dockerComposeConfig['version'] = $deeployerConfig['version'];
 
-        $json['services'] = [
+        $dockerComposeConfig['services'] = [
             'traefik' => $this->createTraefikConf()
         ];
-        foreach ($config['containers'] as $serviceName => $containerConfig) {
+        foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
             $serviceConfig = $this->createServiceConfig($containerConfig);
 
             if (isset($containerConfig['host'])) {
                 $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']);
             }
 
-            $json['services'][$serviceName] = $serviceConfig;
+            $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
         }
-        return $json;
+        return $dockerComposeConfig;
     }
 
-    public function createFile(array $config): string
+    public function createFile(array $deeployerConfig): string
     {
-        $dockerFileConfig = $this->createConfig($config);
+        $dockerFileConfig = $this->createDockerComposeConfig($deeployerConfig);
         $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
         if ($returnCode === false) {
             throw new \RuntimeException('Error when trying to create the docker-compose file');
@@ -41,16 +41,44 @@ class ComposeFileGenerator
     
     public function createTraefikConf(): array
     {
-        //todo: create traefik container
-        return [];
+        //todo allow configuration of the traefik config?
+        return [
+            "image" => "traefik:2.0",
+            "command" => [
+                "--providers.docker",
+                "--providers.docker.exposedByDefault=false",
+            ],
+            "ports" => [
+                "80:80",
+            ],
+            "volumes" => [
+                "/var/run/docker.sock:/var/run/docker.sock",
+            ]
+        ];
     }
     
     public function createServiceConfig(array $containerConfig): array
     {
         //todo app more options
-        return [
+        $dockerComposeConfig = [
             'image' => $containerConfig['image']
         ];
+        
+        if (isset($containerConfig['env'])) {
+            $dockerComposeConfig['environment'] = [];
+            foreach ($containerConfig['env'] as $envVariableName => $envVariableValue) {
+                $dockerComposeConfig['environment'][$envVariableName] = $envVariableValue;
+            }
+        }
+
+        if (isset($containerConfig['volumes'])) {
+            $dockerComposeConfig['volumes'] = [];
+            foreach ($containerConfig['volumes'] as $mountValue) {
+                $dockerComposeConfig['volumes'][] = $mountValue;
+            }
+        }
+        
+        return $dockerComposeConfig;
     }
     
     public function createTraefikLabels(array $hostConfig): array

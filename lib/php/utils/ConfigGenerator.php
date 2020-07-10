@@ -12,17 +12,17 @@ class ConfigGenerator
     /**
      * @return mixed[]
      */
-    public function getConfig(string $filePath): array
+    public function getConfig(string $userConfigFilePath): array
     {
-        $tmpFilePath = self::tmpFilePath;
+        $tmpJsonFilePath = self::tmpFilePath;
         $env = ""; //todo: get env variables from $ENV ?
-        Executor::execute("jsonnet $filePath --ext-code \"env=$env\" --ext-str timestamp=\"2020-05-05 00:00:00\" > $tmpFilePath");
+        Executor::execute("jsonnet $userConfigFilePath --ext-code \"env=$env\" --ext-str timestamp=\"2020-05-05 00:00:00\" > $tmpJsonFilePath");
         $schemaFilePath = self::schemaFilePath;
-        Executor::execute("ajv test -s $schemaFilePath -d $tmpFilePath --valid");
+        Executor::execute("ajv test -s $schemaFilePath -d $tmpJsonFilePath --valid");
         
-        $content = file_get_contents($tmpFilePath);
+        $content = file_get_contents($tmpJsonFilePath);
         if ($content === false) {
-            throw new \RuntimeException("Error when reading $tmpFilePath");
+            throw new \RuntimeException("Error when reading $tmpJsonFilePath");
         }
         $json = json_decode($content, true);
         if ($json === false) {
