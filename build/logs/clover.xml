@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1594398753">
+  <project timestamp="1594398753">
+    <package name="App\commands">
+      <file name="/home/mika/tanka/deeployer/lib/php/commands/DownCommand.php">
+        <class name="App\commands\DownCommand" namespace="App\commands">
+          <metrics complexity="2" methods="2" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="8" coveredstatements="0" elements="10" coveredelements="0"/>
+        </class>
+        <line num="17" type="method" name="configure" visibility="protected" complexity="1" crap="2" count="0"/>
+        <line num="19" type="stmt" count="0"/>
+        <line num="21" type="stmt" count="0"/>
+        <line num="23" type="method" name="execute" visibility="protected" complexity="1" crap="2" count="0"/>
+        <line num="25" type="stmt" count="0"/>
+        <line num="26" type="stmt" count="0"/>
+        <line num="28" type="stmt" count="0"/>
+        <line num="29" type="stmt" count="0"/>
+        <line num="30" type="stmt" count="0"/>
+        <line num="31" type="stmt" count="0"/>
+        <metrics loc="33" ncloc="31" classes="1" methods="2" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="8" coveredstatements="0" elements="10" coveredelements="0"/>
+      </file>
+      <file name="/home/mika/tanka/deeployer/lib/php/commands/ExportCommand.php">
+        <class name="App\commands\ExportCommand" namespace="App\commands">
+          <metrics complexity="4" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="0" elements="19" coveredelements="0"/>
+        </class>
+        <line num="30" type="method" name="__construct" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="32" type="stmt" count="0"/>
+        <line num="33" type="stmt" count="0"/>
+        <line num="34" type="stmt" count="0"/>
+        <line num="35" type="stmt" count="0"/>
+        <line num="36" type="stmt" count="0"/>
+        <line num="38" type="method" name="configure" visibility="protected" complexity="1" crap="2" count="0"/>
+        <line num="40" type="stmt" count="0"/>
+        <line num="41" type="stmt" count="0"/>
+        <line num="43" type="method" name="execute" visibility="protected" complexity="2" crap="6" count="0"/>
+        <line num="45" type="stmt" count="0"/>
+        <line num="46" type="stmt" count="0"/>
+        <line num="47" type="stmt" count="0"/>
+        <line num="48" type="stmt" count="0"/>
+        <line num="49" type="stmt" count="0"/>
+        <line num="50" type="stmt" count="0"/>
+        <line num="51" type="stmt" count="0"/>
+        <line num="53" type="stmt" count="0"/>
+        <line num="54" type="stmt" count="0"/>
+        <metrics loc="56" ncloc="47" classes="1" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="0" elements="19" coveredelements="0"/>
+      </file>
+      <file name="/home/mika/tanka/deeployer/lib/php/commands/UpCommand.php">
+        <class name="App\commands\UpCommand" namespace="App\commands">
+          <metrics complexity="4" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="24" coveredstatements="0" elements="27" coveredelements="0"/>
+        </class>
+        <line num="32" type="method" name="__construct" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="34" type="stmt" count="0"/>
+        <line num="35" type="stmt" count="0"/>
+        <line num="36" type="stmt" count="0"/>
+        <line num="37" type="stmt" count="0"/>
+        <line num="38" type="stmt" count="0"/>
+        <line num="40" type="method" name="configure" visibility="protected" complexity="1" crap="2" count="0"/>
+        <line num="42" type="stmt" count="0"/>
+        <line num="43" type="stmt" count="0"/>
+        <line num="44" type="stmt" count="0"/>
+        <line num="45" type="stmt" count="0"/>
+        <line num="46" type="stmt" count="0"/>
+        <line num="47" type="stmt" count="0"/>
+        <line num="49" type="stmt" count="0"/>
+        <line num="51" type="method" name="execute" visibility="protected" complexity="2" crap="6" count="0"/>
+        <line num="53" type="stmt" count="0"/>
+        <line num="54" type="stmt" count="0"/>
+        <line num="55" type="stmt" count="0"/>
+        <line num="57" type="stmt" count="0"/>
+        <line num="59" type="stmt" count="0"/>
+        <line num="60" type="stmt" count="0"/>
+        <line num="61" type="stmt" count="0"/>
+        <line num="62" type="stmt" count="0"/>
+        <line num="63" type="stmt" count="0"/>
+        <line num="65" type="stmt" count="0"/>
+        <line num="66" type="stmt" count="0"/>
+        <line num="67" type="stmt" count="0"/>
+        <metrics loc="70" ncloc="61" classes="1" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="24" coveredstatements="0" elements="27" coveredelements="0"/>
+      </file>
+    </package>
+    <package name="App\utils">
+      <file name="/home/mika/tanka/deeployer/lib/php/utils/ComposeFileGenerator.php">
+        <class name="App\utils\ComposeFileGenerator" namespace="App\utils">
+          <metrics complexity="14" methods="5" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="35" coveredstatements="4" elements="40" coveredelements="6"/>
+        </class>
+        <line num="11" type="method" name="createDockerComposeConfig" visibility="public" complexity="4" crap="20" count="0"/>
+        <line num="13" type="stmt" count="0"/>
+        <line num="15" type="stmt" count="0"/>
+        <line num="17" type="stmt" count="0"/>
+        <line num="19" type="stmt" count="0"/>
+        <line num="20" type="stmt" count="0"/>
+        <line num="22" type="stmt" count="0"/>
+        <line num="23" type="stmt" count="0"/>
+        <line num="25" type="stmt" count="0"/>
+        <line num="26" type="stmt" count="0"/>
+        <line num="29" type="stmt" count="0"/>
+        <line num="33" type="stmt" count="0"/>
+        <line num="36" type="stmt" count="0"/>
+        <line num="39" type="method" name="createFile" visibility="public" complexity="2" crap="6" count="0"/>
+        <line num="41" type="stmt" count="0"/>
+        <line num="42" type="stmt" count="0"/>
+        <line num="43" type="stmt" count="0"/>
+        <line num="44" type="stmt" count="0"/>
+        <line num="46" type="stmt" count="0"/>
+        <line num="49" type="method" name="createTraefikConf" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="53" type="stmt" count="1"/>
+        <line num="67" type="method" name="createServiceConfig" visibility="public" complexity="6" crap="42" count="0"/>
+        <line num="69" type="stmt" count="0"/>
+        <line num="72" type="stmt" count="0"/>
+        <line num="75" type="stmt" count="0"/>
+        <line num="76" type="stmt" count="0"/>
+        <line num="77" type="stmt" count="0"/>
+        <line num="78" type="stmt" count="0"/>
+        <line num="82" type="stmt" count="0"/>
+        <line num="83" type="stmt" count="0"/>
+        <line num="84" type="stmt" count="0"/>
+        <line num="85" type="stmt" count="0"/>
+        <line num="87" type="stmt" count="0"/>
+        <line num="88" type="stmt" count="0"/>
+        <line num="89" type="stmt" count="0"/>
+        <line num="94" type="stmt" count="0"/>
+        <line num="97" type="method" name="createTraefikLabels" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="99" type="stmt" count="1"/>
+        <line num="101" type="stmt" count="1"/>
+        <line num="102" type="stmt" count="1"/>
+        <metrics loc="105" ncloc="97" classes="1" methods="5" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="35" coveredstatements="4" elements="40" coveredelements="6"/>
+      </file>
+      <file name="/home/mika/tanka/deeployer/lib/php/utils/ConfigFileFinder.php">
+        <class name="App\utils\ConfigFileFinder" namespace="App\utils">
+          <metrics complexity="3" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="0" elements="6" coveredelements="0"/>
+        </class>
+        <line num="15" type="method" name="findFile" visibility="public" complexity="3" crap="12" count="0"/>
+        <line num="17" type="stmt" count="0"/>
+        <line num="18" type="stmt" count="0"/>
+        <line num="20" type="stmt" count="0"/>
+        <line num="21" type="stmt" count="0"/>
+        <line num="23" type="stmt" count="0"/>
+        <metrics loc="25" ncloc="22" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="0" elements="6" coveredelements="0"/>
+      </file>
+      <file name="/home/mika/tanka/deeployer/lib/php/utils/ConfigGenerator.php">
+        <class name="App\utils\ConfigGenerator" namespace="App\utils">
+          <metrics complexity="3" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="12" coveredstatements="10" elements="13" coveredelements="10"/>
+        </class>
+        <line num="15" type="method" name="getConfig" visibility="public" complexity="3" crap="3.04" count="1"/>
+        <line num="17" type="stmt" count="1"/>
+        <line num="18" type="stmt" count="1"/>
+        <line num="19" type="stmt" count="1"/>
+        <line num="20" type="stmt" count="1"/>
+        <line num="21" type="stmt" count="1"/>
+        <line num="23" type="stmt" count="1"/>
+        <line num="24" type="stmt" count="1"/>
+        <line num="25" type="stmt" count="0"/>
+        <line num="27" type="stmt" count="1"/>
+        <line num="28" type="stmt" count="1"/>
+        <line num="29" type="stmt" count="0"/>
+        <line num="31" type="stmt" count="1"/>
+        <metrics loc="33" ncloc="28" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="12" coveredstatements="10" elements="13" coveredelements="10"/>
+      </file>
+      <file name="/home/mika/tanka/deeployer/lib/php/utils/EnvironmentFetcher.php">
+        <class name="App\utils\EnvironmentFetcher" namespace="App\utils">
+          <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="0" elements="4" coveredelements="0"/>
+        </class>
+        <line num="12" type="method" name="getJSONEnv" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="14" type="stmt" count="0"/>
+        <line num="15" type="stmt" count="0"/>
+        <line num="16" type="stmt" count="0"/>
+        <metrics loc="17" ncloc="12" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="0" elements="4" coveredelements="0"/>
+      </file>
+      <file name="/home/mika/tanka/deeployer/lib/php/utils/Executor.php">
+        <class name="App\utils\Executor" namespace="App\utils">
+          <metrics complexity="2" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="4" elements="6" coveredelements="4"/>
+        </class>
+        <line num="8" type="method" name="execute" visibility="public" complexity="2" crap="2.03" count="1"/>
+        <line num="10" type="stmt" count="1"/>
+        <line num="11" type="stmt" count="1"/>
+        <line num="12" type="stmt" count="1"/>
+        <line num="13" type="stmt" count="0"/>
+        <line num="15" type="stmt" count="1"/>
+        <metrics loc="15" ncloc="15" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="4" elements="6" coveredelements="4"/>
+      </file>
+    </package>
+    <file name="/home/mika/tanka/deeployer/lib/php/utils/EnvironmentFetcherInterface.php">
+      <metrics loc="10" ncloc="7" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
+    </file>
+    <file name="/home/mika/tanka/deeployer/lib/php/utils/VolumeConfig.php">
+      <metrics loc="0" ncloc="0" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
+    </file>
+    <metrics files="10" loc="364" ncloc="320" classes="8" methods="17" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="108" coveredstatements="18" elements="125" coveredelements="20"/>
+  </project>
+</coverage>

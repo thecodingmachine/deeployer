@@ -47,8 +47,10 @@ class ComposeFileGeneratorTest extends TestCase
         $config= [
             'image' => 'myimage',
             'volumes' => [
-                '/var/www/html:/var/www/html',
-                '/var/www/:/var/www',
+                'mysql_data' => [
+                    'diskSpace' => '1G',
+                    'mountPath' => '/var/lib/mysql',
+                ]
             ]
         ];
         $result = $generator->createServiceConfig($config);

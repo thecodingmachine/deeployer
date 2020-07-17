@@ -10,7 +10,9 @@ class ComposeFileGenerator
     
     public function createDockerComposeConfig(array $deeployerConfig): array
     {
-        $dockerComposeConfig = ['a' => 1];
+        $dockerComposeConfig = [];
+
+        $disksToCreate = [];
 
         $dockerComposeConfig['version'] = $deeployerConfig['version'];
 
@@ -18,13 +20,18 @@ class ComposeFileGenerator
             'traefik' => $this->createTraefikConf()
         ];
         foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
-            $serviceConfig = $this->createServiceConfig($containerConfig);
+            $serviceConfig = $this->createServiceConfig($containerConfig, $disksToCreate);
 
             if (isset($containerConfig['host'])) {
                 $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']);
             }
 
             $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
+        }
+
+
+        foreach (volumesToGenerate as $disksToCreate) {
+            //todo create the config for volume generation
         }
         return $dockerComposeConfig;
     }
@@ -57,13 +64,15 @@ class ComposeFileGenerator
         ];
     }
     
-    public function createServiceConfig(array $containerConfig): array
+    public function createServiceConfig(array $containerConfig, array &$disksToCreate): array
     {
+        createTraefikConf();
+        $volumesToGenerate = [];
         //todo app more options
         $dockerComposeConfig = [
             'image' => $containerConfig['image']
         ];
-        
+         
         if (isset($containerConfig['env'])) {
             $dockerComposeConfig['environment'] = [];
             foreach ($containerConfig['env'] as $envVariableName => $envVariableValue) {
@@ -73,8 +82,13 @@ class ComposeFileGenerator
 
         if (isset($containerConfig['volumes'])) {
             $dockerComposeConfig['volumes'] = [];
-            foreach ($containerConfig['volumes'] as $mountValue) {
-                $dockerComposeConfig['volumes'][] = $mountValue;
+            foreach ($containerConfig['volumes'] as $volumeConfig) {
+                $volumeToCreateConfig = new VolumeConfig($volumeConfig);
+                //todo
+                $dockerComposeConfig['volumes'][] = $volumeToCreate['toString'];
+                if ($volumeToCreate['needsToBeGenerated']) {
+                    $disksToCreate[$volumeToCreate['diskKey']] = $volumeToCreate['diskConfig'];
+                }
             }
         }
         
@@ -83,9 +97,6 @@ class ComposeFileGenerator
     
     public function createTraefikLabels(array $hostConfig): array
     {
-        if (!isset($hostConfig['url'])) {
-            throw new \RuntimeException('No parameter url found in the host config: '. var_export($hostConfig, true));
-        }
         $host = $hostConfig['url'];
         return [
             'traefik.enable=true',
@@ -93,4 +104,4 @@ class ComposeFileGenerator
         ];
     }
 
-}
+} 
