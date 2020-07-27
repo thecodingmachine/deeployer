@@ -9,6 +9,7 @@ class ComposeFileGenerator
     public const TmpFilePath = '/tmp/docker-compose.json';
     public const volumesToGenerate = '';
 
+
     public function createFile(array $deeployerConfig): string
     {
         $dockerFileConfig = $this->createDockerComposeConfig($deeployerConfig);
@@ -94,9 +95,9 @@ class ComposeFileGenerator
 
     // Create volumes
 
-    public function createVolumeConfig( $volumeName): array
+    public function createVolumeConfig( array $containerConfig): array
     {
-        $driver = array(driver => 'local');
+        $driver = ['driver' => 'local'];
         $dockerComposeConfig['volumes'] = [] ;
         if (isset($containerConfig['volumes'])) {
             $dockerComposeConfig['volumes'] = [];
@@ -104,7 +105,7 @@ class ComposeFileGenerator
                 $dockerComposeConfig['volumes'][ $volumeName] = $driver;
             }
         }
-
+        return $dockerComposeConfig;
     }
 
     public function createDockerComposeConfig(array $deeployerConfig): array
@@ -119,7 +120,7 @@ class ComposeFileGenerator
             'traefik' => $this->createTraefikConf()
         ];
         foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
-            $serviceConfig = $this->createServiceConfig($containerConfig, $disksToCreate);
+            $serviceConfig = $this->createServiceConfig($containerConfig);
 
             if (isset($containerConfig['host'])) {
                 $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']); //???
@@ -128,7 +129,7 @@ class ComposeFileGenerator
             $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
         }
 
-
+        $this->createVolumeConfig(containerConfig) ;
         // foreach (volumesToGenerate as $disksToCreate) {
         //     'volumes:',
 
