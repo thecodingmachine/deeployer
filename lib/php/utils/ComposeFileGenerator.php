@@ -10,6 +10,7 @@ class ComposeFileGenerator
     public const volumesToGenerate = '';
 
 
+
     public function createFile(array $deeployerConfig): string
     {
         $dockerFileConfig = $this->createDockerComposeConfig($deeployerConfig);
@@ -94,18 +95,19 @@ class ComposeFileGenerator
     }
 
     // Create volumes
-
-    public function createVolumeConfig( array $containerConfig): array
+    public function createVolumeConfig( array $deeployerConfig ): array
     {
         $driver = ['driver' => 'local'];
         $dockerComposeConfig['volumes'] = [] ;
-        if (isset($containerConfig['volumes'])) {
-            $dockerComposeConfig['volumes'] = [];
-            foreach ($containerConfig['volumes'] as $volumeName => $volume) {
-                $dockerComposeConfig['volumes'][ $volumeName] = $driver;
+        foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
+            if (isset($containerConfig['volumes'])) {
+                foreach ($containerConfig['volumes'] as $volumeName => $volume) {
+                    $dockerComposeConfig['volumes'][$volumeName] = $driver;
+                }
             }
         }
         return $dockerComposeConfig;
+        // Need to make the returned value accessible
     }
 
     public function createDockerComposeConfig(array $deeployerConfig): array
@@ -129,11 +131,8 @@ class ComposeFileGenerator
             $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
         }
 
-        $this->createVolumeConfig(containerConfig) ;
-        // foreach (volumesToGenerate as $disksToCreate) {
-        //     'volumes:',
+        $this->createVolumeConfig($deeployerConfig) ; // Need to put this in a variable
 
-        // }
         return $dockerComposeConfig;
     }
 
