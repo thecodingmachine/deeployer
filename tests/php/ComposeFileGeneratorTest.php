@@ -57,8 +57,7 @@ class ComposeFileGeneratorTest extends TestCase
         $this->assertEquals([
             'image' => 'myimage',
             'volumes' => [
-                '/var/www/html:/var/www/html',
-                '/var/www/:/var/www',
+                'mysql_data:/var/www/html',
             ]
         ], $result);
     }
