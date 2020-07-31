@@ -98,15 +98,15 @@ class ComposeFileGenerator
     public function createVolumeConfig( array $deeployerConfig ): array
     {
         $driver = ['driver' => 'local'];
-        $dockerComposeConfig['volumes'] = [] ;
+        $volumesConfig = [] ;
         foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
             if (isset($containerConfig['volumes'])) {
                 foreach ($containerConfig['volumes'] as $volumeName => $volume) {
-                    $dockerComposeConfig['volumes'][$volumeName] = $driver;
+                    $volumesConfig[$volumeName] = $driver;
                 }
             }
         }
-        return $dockerComposeConfig;
+        return $volumesConfig;
         // Need to make the returned value accessible
     }
 
@@ -131,7 +131,9 @@ class ComposeFileGenerator
             $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
         }
 
-        $this->createVolumeConfig($deeployerConfig) ; // Need to put this in a variable
+        $volumesConfig = $this->createVolumeConfig($deeployerConfig) ; // Need to put this in a variable
+
+        $dockerComposeConfig['volumes'] = $volumesConfig ;
 
         return $dockerComposeConfig;
     }
