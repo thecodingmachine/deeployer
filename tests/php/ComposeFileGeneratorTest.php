@@ -32,7 +32,7 @@ class ComposeFileGeneratorTest extends TestCase
     public function testServiceConfigWithoutLabel(): void
     {
         $generator = new ComposeFileGenerator();
-        $config= [
+        $config = [
             'image' => 'myimage'
         ];
         $result = $generator->createServiceConfig($config);
@@ -44,19 +44,20 @@ class ComposeFileGeneratorTest extends TestCase
     public function testServiceConfigWithVolumes(): void
     {
         $generator = new ComposeFileGenerator();
-        $config= [
+        $config = [
             'image' => 'myimage',
             'volumes' => [
-                '/var/www/html:/var/www/html',
-                '/var/www/:/var/www',
+                'mysql_data' => [
+                    'diskSpace' => '1G',
+                    'mountPath' => '/var/lib/mysql',
+                ]
             ]
         ];
         $result = $generator->createServiceConfig($config);
         $this->assertEquals([
             'image' => 'myimage',
             'volumes' => [
-                '/var/www/html:/var/www/html',
-                '/var/www/:/var/www',
+                'mysql_data:/var/lib/mysql',
             ]
         ], $result);
     }
@@ -64,7 +65,7 @@ class ComposeFileGeneratorTest extends TestCase
     public function testServiceConfigWithEnvVariables(): void
     {
         $generator = new ComposeFileGenerator();
-        $config= [
+        $config = [
             'image' => 'myimage',
             'env' => [
                 'startup_command' => 'yarn build',
@@ -95,20 +96,20 @@ class ComposeFileGeneratorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testTraefikLabelsThrowErrorWhenNoUrl(): void
-    {
-        $generator = new ComposeFileGenerator();
-        $wrongHostConfig = [
-            'wrongParameter' => 'myhost.com'
-        ];
-        $this->expectException(\RuntimeException::class);
-        $generator->createTraefikLabels($wrongHostConfig);
-    }
-    
+    //public function testTraefikLabelsThrowErrorWhenNoUrl(): void
+    //{
+    //    $generator = new ComposeFileGenerator();
+    //    $wrongHostConfig = [
+    //        'wrongParameter' => 'myhost.com'
+    //    ];
+    //    $this->expectException(\RuntimeException::class);
+    //    $generator->createTraefikLabels($wrongHostConfig);
+    //}
+
     public function testCreatedConfigServicesNames(): void
     {
         $generator = new ComposeFileGenerator();
-        
+
         $config = [
             "version" => '1.0',
             "containers" => [
@@ -138,7 +139,67 @@ class ComposeFileGeneratorTest extends TestCase
         $this->assertTrue(isset($createdConfig['services']['php']));
         $this->assertTrue(isset($createdConfig['services']['mysql']));
         $this->assertTrue(isset($createdConfig['services']['phpmyadmin']));
-        
+
     }
 
+    public function testHost(): void
+    {
+        $generator = new ComposeFileGenerator();
+
+        $config = [
+            "version" => '1.0',
+            "containers" => [
+                "php" => [
+                    "host" => [
+                        'url' => 'myhost.com'
+                    ],
+                    "image" => "thecodingmachine/php:7.4-v3-apache",
+                ]
+            ]
+        ];
+        $createdConfig = $generator->createDockerComposeConfig($config);
+
+        $this->assertArrayHasKey('traefik', $createdConfig['services']);
+        $this->assertNotSame('traefik.enable=true', $createdConfig['services']['php']['labels'][1]);
+        $this->assertNotSame('traefik.http.routers.php.rule=Host(`myhost.com`)', $createdConfig['services']['php']['labels'][1]);
+    }
+
+    public function testThereIsNoTraefikIfThereIsNoHost(): void
+    {
+        $generator = new ComposeFileGenerator();
+
+        $config = [
+            "version" => '1.0',
+            "containers" => [
+                "mysql" => [
+                    "image" => "mysql"
+                ]
+            ]
+        ];
+        $createdConfig = $generator->createDockerComposeConfig($config);
+        $this->assertArrayHasKey('traefik', $createdConfig['services']);
+    }
+
+
+    public function testVolumesCreated(): void
+    {
+        $generator = new ComposeFileGenerator();
+
+        $config = [
+            "version" => '1.0',
+            "containers" => [
+                "mysql" => [
+                    "image" => "mysql",
+                    "volumes" => [
+                        "mysqldata" =>  [
+                            "diskSpace" => "1G",
+                            "mountPath" => "/var/lib/mysql",
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $createdConfig = $generator->createDockerComposeConfig($config);
+        $this->assertArrayHasKey('mysqldata', $createdConfig['volumes']);
+    }
 }

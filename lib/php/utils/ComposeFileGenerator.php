@@ -7,27 +7,9 @@ namespace App\utils;
 class ComposeFileGenerator
 {
     public const TmpFilePath = '/tmp/docker-compose.json';
-    
-    public function createDockerComposeConfig(array $deeployerConfig): array
-    {
-        $dockerComposeConfig = ['a' => 1];
+    public const volumesToGenerate = '';
 
-        $dockerComposeConfig['version'] = $deeployerConfig['version'];
 
-        $dockerComposeConfig['services'] = [
-            'traefik' => $this->createTraefikConf()
-        ];
-        foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
-            $serviceConfig = $this->createServiceConfig($containerConfig);
-
-            if (isset($containerConfig['host'])) {
-                $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']);
-            }
-
-            $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
-        }
-        return $dockerComposeConfig;
-    }
 
     public function createFile(array $deeployerConfig): string
     {
@@ -38,7 +20,7 @@ class ComposeFileGenerator
         }
         return self::TmpFilePath;
     }
-    
+
     public function createTraefikConf(): array
     {
         //todo allow configuration of the traefik config?
@@ -57,13 +39,42 @@ class ComposeFileGenerator
         ];
     }
     
+    public function createTraefikLabels(array $hostConfig): array
+    {
+        $host = $hostConfig['url'];
+        // Utilité de cette ligne???
+        return [
+            'traefik.enable=true',
+            "traefik.http.routers.front_router.rule=Host(`$host`)"
+        ];
+    }
+
     public function createServiceConfig(array $containerConfig): array
     {
+        //createTraefikConf();
+
+        $volumesToGenerate = [];
         //todo app more options
         $dockerComposeConfig = [
             'image' => $containerConfig['image']
         ];
-        
+
+        // Adding traefik_labels to containers
+        //if (isset ($containerConfig['host'])) {
+        //    $dockerComposeConfig['labels'] = [];
+        //    foreach ($containerConfig['host']['url'] as $hostName => $hostNameUrl) {
+        //        $dockerComposeConfig['labels'][$hostName] = $hostNameUrl ;
+        //    }
+        //}
+
+        //Added ports
+        if (isset($containerConfig['ports'])) {
+            $dockerComposeConfig['ports'] = [];
+            foreach ($containerConfig['ports'] as $portsSet => $portsValue) {
+                $dockerComposeConfig['ports'][$portsSet] = $portsSet;
+            }
+        }
+
         if (isset($containerConfig['env'])) {
             $dockerComposeConfig['environment'] = [];
             foreach ($containerConfig['env'] as $envVariableName => $envVariableValue) {
@@ -71,26 +82,60 @@ class ComposeFileGenerator
             }
         }
 
+        // Set volumes for container
         if (isset($containerConfig['volumes'])) {
             $dockerComposeConfig['volumes'] = [];
-            foreach ($containerConfig['volumes'] as $mountValue) {
-                $dockerComposeConfig['volumes'][] = $mountValue;
+            foreach ($containerConfig['volumes'] as $volumeName => $volume) {
+                 $mountPath = $volume['mountPath'];
+                 $dockerComposeConfig['volumes'][] = $volumeName.":".$mountPath;
             }
         }
         
         return $dockerComposeConfig;
     }
-    
-    public function createTraefikLabels(array $hostConfig): array
+
+    // Create volumes
+    public function createVolumeConfig( array $deeployerConfig ): array
     {
-        if (!isset($hostConfig['url'])) {
-            throw new \RuntimeException('No parameter url found in the host config: '. var_export($hostConfig, true));
+        $driver = ['driver' => 'local'];
+        $volumesConfig = [] ;
+        foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
+            if (isset($containerConfig['volumes'])) {
+                foreach ($containerConfig['volumes'] as $volumeName => $volume) {
+                    $volumesConfig[$volumeName] = $driver;
+                }
+            }
         }
-        $host = $hostConfig['url'];
-        return [
-            'traefik.enable=true',
-            "traefik.http.routers.front_router.rule=Host(`$host`)"
-        ];
+        return $volumesConfig;
+        // Need to make the returned value accessible
     }
 
-}
+    public function createDockerComposeConfig(array $deeployerConfig): array
+    {
+        $dockerComposeConfig = [];
+
+        $disksToCreate = [];
+
+        $dockerComposeConfig['version'] = "3.3";
+
+        $dockerComposeConfig['services'] = [
+            'traefik' => $this->createTraefikConf()
+        ];
+        foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
+            $serviceConfig = $this->createServiceConfig($containerConfig);
+
+            if (isset($containerConfig['host'])) {
+                $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']); //???
+            }
+
+            $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
+        }
+
+        $volumesConfig = $this->createVolumeConfig($deeployerConfig) ; // Need to put this in a variable
+
+        $dockerComposeConfig['volumes'] = $volumesConfig ;
+
+        return $dockerComposeConfig;
+    }
+
+} 

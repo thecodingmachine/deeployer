@@ -9,7 +9,7 @@
             "diskSpace": "1G",
             "mountPath": "/var/lib/mysql"
           },
-          "conf": {
+          "mysql-conf": {
             "diskSpace": "10M",
             "mountPath": "/etc/mysql"
           }
