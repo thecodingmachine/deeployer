@@ -17,7 +17,7 @@ class ComposeFileGenerator
 
         // Affectation de deeployer.json à dockerFileConfig
         $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
-
+       
         // Checking if the content of TmpFilePath is well encoded
         if ($returnCode === false) {
             throw new \RuntimeException('Error when trying to create the docker-compose file');
@@ -55,26 +55,20 @@ class ComposeFileGenerator
 
     public function createServiceConfig(array $containerConfig): array
     {
-        //createTraefikConf();
 
-        //todo app more options
+        //What is the utility of the next 2 lines ??
         $dockerComposeConfig = [
-            'image' => $containerConfig['image']
+            'image' => $containerConfig['image'],
+            // 'ports' => $containerConfig['ports'],
+            // 'environment' => $containerConfig['env'],
+            // 'volumes' => $containerConfig['volumes']
         ];
-
-        // Adding traefik_labels to containers
-        //if (isset ($containerConfig['host'])) {
-        //    $dockerComposeConfig['labels'] = [];
-        //    foreach ($containerConfig['host']['url'] as $hostName => $hostNameUrl) {
-        //        $dockerComposeConfig['labels'][$hostName] = $hostNameUrl ;
-        //    }
-        //}
 
         //Added ports
         if (isset($containerConfig['ports'])) {
             $dockerComposeConfig['ports'] = [];
             foreach ($containerConfig['ports'] as $portsSet => $portsValue) {
-                $dockerComposeConfig['ports'][$portsSet] = $portsSet;
+                $dockerComposeConfig['ports'][$portsSet] = $portsValue;
             }
         }
 
@@ -88,9 +82,17 @@ class ComposeFileGenerator
         // Set volumes for container
         if (isset($containerConfig['volumes'])) {
             $dockerComposeConfig['volumes'] = [];
-            foreach ($containerConfig['volumes'] as $volumeName => $volume) {
-                 $mountPath = $volume['mountPath'];
+            foreach ($containerConfig['volumes'] as $volumeName => $volumeValue) {
+                 $mountPath = $volumeValue['mountPath'];
                  $dockerComposeConfig['volumes'][] = $volumeName.":".$mountPath;
+            }
+        }
+
+        // Setting command feature
+        if (isset($containerConfig['command'])) {
+            $dockerComposeConfig['command'] = [];
+            foreach ($containerConfig['command'] as $commandValue) {
+                 $dockerComposeConfig['command'] = $commandValue;
             }
         }
 
@@ -102,10 +104,10 @@ class ComposeFileGenerator
     {
         $driver = ['driver' => 'local'];
         $volumesConfig = [] ;
-        foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
-            if (isset($containerConfig['volumes'])) {
-                foreach ($containerConfig['volumes'] as $volumeName ) {
-                    $volumesConfig[$volumeName] = $driver;
+        foreach ($deeployerConfig['containers'] as $serviceName) {
+            if (isset($serviceName['volumes'])) {
+                foreach ($serviceName['volumes'] as $volumeName ) {
+                    $volumesConfig[$volumeName]= $driver;
                 }
             }
         }
@@ -132,7 +134,7 @@ class ComposeFileGenerator
             $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
         }
 
-        $volumesConfig = $this->createVolumeConfig($deeployerConfig) ; // Need to put this in a variable
+        $volumesConfig = $this->createVolumeConfig($deeployerConfig); // Need to put this in a variable
 
         $dockerComposeConfig['volumes'] = $volumesConfig ;
 

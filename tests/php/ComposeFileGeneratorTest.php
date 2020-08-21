@@ -176,7 +176,6 @@ class ComposeFileGeneratorTest extends TestCase
         $generator = new ComposeFileGenerator();
 
         $config = [
-            "version" => '1.0',
             "containers" => [
                 "mysql" => [
                     "image" => "mysql",
@@ -190,6 +189,17 @@ class ComposeFileGeneratorTest extends TestCase
             ]
         ];
         $createdConfig = $generator->createDockerComposeConfig($config);
-        $this->assertArrayHasKey('mysqldata', $createdConfig['volumes']);
+        //$this->assertArrayHasKey('mysqldata', $createdConfig['volumes']);
+        $this->assertEquals([
+            "services" => [
+                "mysql" => [
+                    "image" => "mysql",
+                    "volumes" => ["mysqldata:/var/lib/mysql"]
+                ]
+                ],
+            "volumes" => [
+                "mysql_data" => [ "driver" => "local"]
+            ]
+        ], $createdConfig);
     }
 }

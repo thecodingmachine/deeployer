@@ -1,13 +1,8 @@
 {
   "version": "1.0",
   "containers": {
-      "phpmyadmin": {
-        "image": "phpmyadmin",
-        "host": {
-          "url": "myhost.com",
-          "containerPort": 80,
-          "https": true
-        }
+      "traefik": {
+        "image": "traefik:v2.2"
       }
     },
   "config": {
