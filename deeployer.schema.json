@@ -147,6 +147,14 @@
               "minLength": 1
             }
           }
+        },
+        "docker-compose": {
+          "type":"object",
+          "properties": {
+            "commands" : {
+              "type":"array"
+            }
+          }
         }
 
       }

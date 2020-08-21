@@ -6,7 +6,7 @@ namespace App\utils;
 
 class ComposeFileGenerator
 {
-    public const TmpFilePath = '/tmp/docker-compose.json';
+    public const TmpFilePath = '/tmp/deeployer.json';
     public const volumesToGenerate = '';
 
 
@@ -14,7 +14,11 @@ class ComposeFileGenerator
     public function createFile(array $deeployerConfig): string
     {
         $dockerFileConfig = $this->createDockerComposeConfig($deeployerConfig);
+
+        // Affectation de deeployer.json à dockerFileConfig
         $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
+
+        // Checking if the content of TmpFilePath is well encoded
         if ($returnCode === false) {
             throw new \RuntimeException('Error when trying to create the docker-compose file');
         }
@@ -38,7 +42,7 @@ class ComposeFileGenerator
             ]
         ];
     }
-    
+
     public function createTraefikLabels(array $hostConfig): array
     {
         $host = $hostConfig['url'];
@@ -53,7 +57,6 @@ class ComposeFileGenerator
     {
         //createTraefikConf();
 
-        $volumesToGenerate = [];
         //todo app more options
         $dockerComposeConfig = [
             'image' => $containerConfig['image']
@@ -90,7 +93,7 @@ class ComposeFileGenerator
                  $dockerComposeConfig['volumes'][] = $volumeName.":".$mountPath;
             }
         }
-        
+
         return $dockerComposeConfig;
     }
 
@@ -101,7 +104,7 @@ class ComposeFileGenerator
         $volumesConfig = [] ;
         foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
             if (isset($containerConfig['volumes'])) {
-                foreach ($containerConfig['volumes'] as $volumeName => $volume) {
+                foreach ($containerConfig['volumes'] as $volumeName ) {
                     $volumesConfig[$volumeName] = $driver;
                 }
             }
@@ -114,8 +117,6 @@ class ComposeFileGenerator
     {
         $dockerComposeConfig = [];
 
-        $disksToCreate = [];
-
         $dockerComposeConfig['version'] = "3.3";
 
         $dockerComposeConfig['services'] = [
@@ -125,7 +126,7 @@ class ComposeFileGenerator
             $serviceConfig = $this->createServiceConfig($containerConfig);
 
             if (isset($containerConfig['host'])) {
-                $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']); //???
+                $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']);
             }
 
             $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
@@ -137,5 +138,4 @@ class ComposeFileGenerator
 
         return $dockerComposeConfig;
     }
-
-} 
+}

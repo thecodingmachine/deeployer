@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1596202633">
-  <project timestamp="1596202633">
+<coverage generated="1598001422">
+  <project timestamp="1598001422">
     <package name="App\commands">
       <file name="/home/mika/tanka/deeployer/lib/php/commands/DownCommand.php">
         <class name="App\commands\DownCommand" namespace="App\commands">
@@ -80,7 +80,7 @@
     <package name="App\utils">
       <file name="/home/mika/tanka/deeployer/lib/php/utils/ComposeFileGenerator.php">
         <class name="App\utils\ComposeFileGenerator" namespace="App\utils">
-          <metrics complexity="18" methods="6" coveredmethods="5" conditionals="0" coveredconditionals="0" statements="45" coveredstatements="40" elements="51" coveredelements="45"/>
+          <metrics complexity="18" methods="6" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="43" coveredstatements="36" elements="49" coveredelements="40"/>
         </class>
         <line num="14" type="method" name="createFile" visibility="public" complexity="2" crap="6" count="0"/>
         <line num="16" type="stmt" count="0"/>
@@ -88,52 +88,50 @@
         <line num="18" type="stmt" count="0"/>
         <line num="19" type="stmt" count="0"/>
         <line num="21" type="stmt" count="0"/>
-        <line num="24" type="method" name="createTraefikConf" visibility="public" complexity="1" crap="1" count="5"/>
-        <line num="28" type="stmt" count="5"/>
+        <line num="24" type="method" name="createTraefikConf" visibility="public" complexity="1" crap="1" count="4"/>
+        <line num="28" type="stmt" count="4"/>
         <line num="42" type="method" name="createTraefikLabels" visibility="public" complexity="1" crap="1" count="3"/>
         <line num="44" type="stmt" count="3"/>
         <line num="47" type="stmt" count="3"/>
         <line num="48" type="stmt" count="3"/>
-        <line num="52" type="method" name="createServiceConfig" visibility="public" complexity="7" crap="7" count="7"/>
-        <line num="56" type="stmt" count="7"/>
-        <line num="59" type="stmt" count="7"/>
-        <line num="71" type="stmt" count="7"/>
+        <line num="52" type="method" name="createServiceConfig" visibility="public" complexity="7" crap="7" count="6"/>
+        <line num="58" type="stmt" count="6"/>
+        <line num="70" type="stmt" count="6"/>
+        <line num="71" type="stmt" count="1"/>
         <line num="72" type="stmt" count="1"/>
         <line num="73" type="stmt" count="1"/>
-        <line num="74" type="stmt" count="1"/>
-        <line num="78" type="stmt" count="7"/>
+        <line num="77" type="stmt" count="6"/>
+        <line num="78" type="stmt" count="1"/>
         <line num="79" type="stmt" count="1"/>
         <line num="80" type="stmt" count="1"/>
-        <line num="81" type="stmt" count="1"/>
-        <line num="86" type="stmt" count="7"/>
-        <line num="87" type="stmt" count="2"/>
-        <line num="88" type="stmt" count="2"/>
-        <line num="89" type="stmt" count="2"/>
-        <line num="90" type="stmt" count="2"/>
-        <line num="94" type="stmt" count="7"/>
-        <line num="98" type="method" name="createVolumeConfig" visibility="public" complexity="4" crap="4" count="4"/>
-        <line num="100" type="stmt" count="4"/>
-        <line num="101" type="stmt" count="4"/>
-        <line num="102" type="stmt" count="4"/>
-        <line num="103" type="stmt" count="4"/>
-        <line num="104" type="stmt" count="1"/>
-        <line num="105" type="stmt" count="1"/>
-        <line num="109" type="stmt" count="4"/>
-        <line num="113" type="method" name="createDockerComposeConfig" visibility="public" complexity="3" crap="3" count="4"/>
-        <line num="115" type="stmt" count="4"/>
-        <line num="117" type="stmt" count="4"/>
-        <line num="119" type="stmt" count="4"/>
-        <line num="121" type="stmt" count="4"/>
-        <line num="122" type="stmt" count="4"/>
-        <line num="124" type="stmt" count="4"/>
-        <line num="125" type="stmt" count="4"/>
-        <line num="127" type="stmt" count="4"/>
-        <line num="128" type="stmt" count="2"/>
-        <line num="131" type="stmt" count="4"/>
-        <line num="134" type="stmt" count="4"/>
-        <line num="136" type="stmt" count="4"/>
-        <line num="138" type="stmt" count="4"/>
-        <metrics loc="140" ncloc="106" classes="1" methods="6" coveredmethods="5" conditionals="0" coveredconditionals="0" statements="45" coveredstatements="40" elements="51" coveredelements="45"/>
+        <line num="85" type="stmt" count="6"/>
+        <line num="86" type="stmt" count="1"/>
+        <line num="87" type="stmt" count="1"/>
+        <line num="88" type="stmt" count="1"/>
+        <line num="89" type="stmt" count="1"/>
+        <line num="93" type="stmt" count="6"/>
+        <line num="97" type="method" name="createVolumeConfig" visibility="public" complexity="4" crap="4.37" count="3"/>
+        <line num="99" type="stmt" count="3"/>
+        <line num="100" type="stmt" count="3"/>
+        <line num="101" type="stmt" count="3"/>
+        <line num="102" type="stmt" count="3"/>
+        <line num="103" type="stmt" count="0"/>
+        <line num="104" type="stmt" count="0"/>
+        <line num="108" type="stmt" count="3"/>
+        <line num="112" type="method" name="createDockerComposeConfig" visibility="public" complexity="3" crap="3" count="3"/>
+        <line num="114" type="stmt" count="3"/>
+        <line num="116" type="stmt" count="3"/>
+        <line num="118" type="stmt" count="3"/>
+        <line num="119" type="stmt" count="3"/>
+        <line num="121" type="stmt" count="3"/>
+        <line num="122" type="stmt" count="3"/>
+        <line num="124" type="stmt" count="3"/>
+        <line num="125" type="stmt" count="2"/>
+        <line num="128" type="stmt" count="3"/>
+        <line num="131" type="stmt" count="3"/>
+        <line num="133" type="stmt" count="3"/>
+        <line num="135" type="stmt" count="3"/>
+        <metrics loc="136" ncloc="104" classes="1" methods="6" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="43" coveredstatements="36" elements="49" coveredelements="40"/>
       </file>
       <file name="/home/mika/tanka/deeployer/lib/php/utils/ConfigFileFinder.php">
         <class name="App\utils\ConfigFileFinder" namespace="App\utils">
@@ -195,6 +193,6 @@
     <file name="/home/mika/tanka/deeployer/lib/php/utils/VolumeConfig.php">
       <metrics loc="0" ncloc="0" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
-    <metrics files="10" loc="399" ncloc="329" classes="8" methods="18" coveredmethods="5" conditionals="0" coveredconditionals="0" statements="118" coveredstatements="54" elements="136" coveredelements="59"/>
+    <metrics files="10" loc="395" ncloc="327" classes="8" methods="18" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="116" coveredstatements="50" elements="134" coveredelements="54"/>
   </project>
 </coverage>

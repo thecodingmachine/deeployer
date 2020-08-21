@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "containers": {
+      "phpmyadmin": {
+        "image": "phpmyadmin",
+        "host": {
+          "url": "myhost.com",
+          "containerPort": 80,
+          "https": true
+        }
+      }
+    },
+  "config": {
+    "docker-compose": {
+      "command": [
+        "--api.insecure=true",
+        "--api.dashboard=true",
+        "--providers.docker",
+        "--providers.docker.exposedByDefault=false",
+        "--log.level=DEBUG",
+        "--entryPoints.web.address=:80",
+        "--entrypoints.other.address=:9000"
+      ]
+    }
+  }
+  }

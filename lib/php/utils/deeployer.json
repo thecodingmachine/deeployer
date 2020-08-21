@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "containers": {
+    "php_myadmin": {
+      "image": "phpmyadmin",
+      "host": "myhost.com"
+    },
+    "mysql": {
+      "image": "phpmyadmin"
+    }
+  }
+}

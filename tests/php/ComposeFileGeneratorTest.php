@@ -96,16 +96,6 @@ class ComposeFileGeneratorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    //public function testTraefikLabelsThrowErrorWhenNoUrl(): void
-    //{
-    //    $generator = new ComposeFileGenerator();
-    //    $wrongHostConfig = [
-    //        'wrongParameter' => 'myhost.com'
-    //    ];
-    //    $this->expectException(\RuntimeException::class);
-    //    $generator->createTraefikLabels($wrongHostConfig);
-    //}
-
     public function testCreatedConfigServicesNames(): void
     {
         $generator = new ComposeFileGenerator();
