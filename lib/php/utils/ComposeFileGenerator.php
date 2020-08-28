@@ -3,10 +3,11 @@
 
 namespace App\utils;
 
+use phpDocumentor\Reflection\Types\Boolean;
 
 class ComposeFileGenerator
 {
-    public const TmpFilePath = '/tmp/deeployer.json';
+    public const TmpFilePath = '/tmp/docker-compose.json';
     public const volumesToGenerate = '';
 
 
@@ -14,10 +15,8 @@ class ComposeFileGenerator
     public function createFile(array $deeployerConfig): string
     {
         $dockerFileConfig = $this->createDockerComposeConfig($deeployerConfig);
-
-        // Affectation de deeployer.json à dockerFileConfig
         $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
-       
+
         // Checking if the content of TmpFilePath is well encoded
         if ($returnCode === false) {
             throw new \RuntimeException('Error when trying to create the docker-compose file');
@@ -25,12 +24,32 @@ class ComposeFileGenerator
         return self::TmpFilePath;
     }
 
-    public function createTraefikConf(): array
+    public function httpsChecker(array $deeployerConfig): bool
     {
-        //todo allow configuration of the traefik config?
-        return [
+        foreach ($deeployerConfig['containers'] as $serviceName => $service){
+            if (isset ($service['host']['https']) && $service['host']['https'] == true){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function httpChecker(array $deeployerConfig): bool
+    {
+        foreach ($deeployerConfig['containers'] as $serviceName => $service){
+            if (isset ($service['host']) ){
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public function createTraefikConf(array $deeployerConfig ): array
+    {
+       $HttpTraefikConfig=[
             "image" => "traefik:2.0",
             "command" => [
+                "--entrypoints.web.address=:80",
                 "--providers.docker",
                 "--providers.docker.exposedByDefault=false",
             ],
@@ -41,16 +60,33 @@ class ComposeFileGenerator
                 "/var/run/docker.sock:/var/run/docker.sock",
             ]
         ];
+
+        if ( $this-> httpsChecker($deeployerConfig) == true){
+            $HttpTraefikConfig['ports'][]= '443:443';
+            if (!isset ($deeployerConfig['config']['https']['mail'])) {
+                throw new \RuntimeException('Error you need to set in the config section of your file the mail field');
+            }
+            $HttpTraefikConfig['command'][]= "--certificatesresolvers.le.acme.email=".$deeployerConfig['config']['https']['mail'];
+            $HttpTraefikConfig['command'][]= "--certificatesresolvers.le.acme.storage=/acme.json";
+            $HttpTraefikConfig['command'][]= "--certificatesresolvers.le.acme.tlschallenge=true";
+            $HttpTraefikConfig['volumes'][]= "./conf/traefik/acme.json:/acme.json";
+        }
+        return $HttpTraefikConfig;
     }
 
-    public function createTraefikLabels(array $hostConfig): array
+    public function createTraefikLabels(array $hostConfig, string $serviceName): array
     {
         $host = $hostConfig['url'];
-        // Utilité de cette ligne???
-        return [
+        $httpLabels = [
             'traefik.enable=true',
-            "traefik.http.routers.front_router.rule=Host(`$host`)"
+            "traefik.http.routers.$serviceName.rule=Host(`$host`)"
         ];
+        if (isset($hostConfig['https']) && $hostConfig['https'] == true) {
+            $httpLabels[] = "traefik.http.routers.$serviceName.tls=true";
+            $httpLabels[] = "traefik.http.routers.$serviceName.tls.certresolver=le";
+            $httpLabels[] = "traefik.http.routers.$serviceName.entrypoints=websecure";
+        }
+        return $httpLabels;
     }
 
     public function createServiceConfig(array $containerConfig): array
@@ -104,39 +140,42 @@ class ComposeFileGenerator
     {
         $driver = ['driver' => 'local'];
         $volumesConfig = [] ;
-        foreach ($deeployerConfig['containers'] as $serviceName) {
-            if (isset($serviceName['volumes'])) {
-                foreach ($serviceName['volumes'] as $volumeName ) {
+        foreach ($deeployerConfig['containers'] as $serviceName => $service) {
+            if (isset($service['volumes'])) {
+                foreach ($service['volumes'] as $volumeName => $volume ) {
                     $volumesConfig[$volumeName]= $driver;
                 }
             }
         }
         return $volumesConfig;
-        // Need to make the returned value accessible
+        
     }
 
-    public function createDockerComposeConfig(array $deeployerConfig): array
+    public function createDockerComposeConfig(array $deeployerConfig ): array
     {
         $dockerComposeConfig = [];
 
         $dockerComposeConfig['version'] = "3.3";
 
-        $dockerComposeConfig['services'] = [
-            'traefik' => $this->createTraefikConf()
-        ];
+        if ($this->httpChecker($deeployerConfig)== true){
+            $dockerComposeConfig['services'] = [
+                'traefik' => $this->createTraefikConf($deeployerConfig)
+            ];
+        }
+
         foreach ($deeployerConfig['containers'] as $serviceName => $containerConfig) {
             $serviceConfig = $this->createServiceConfig($containerConfig);
-
-            if (isset($containerConfig['host'])) {
-                $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host']);
+            if ($this->httpChecker($deeployerConfig)== true){
+                if (isset ($containerConfig['host'])) {
+                    $serviceConfig['labels'] = $this->createTraefikLabels($containerConfig['host'], $serviceName);
+                }
             }
-
             $dockerComposeConfig['services'][$serviceName] = $serviceConfig;
         }
 
         $volumesConfig = $this->createVolumeConfig($deeployerConfig); // Need to put this in a variable
-
-        $dockerComposeConfig['volumes'] = $volumesConfig ;
+        if (!empty($volumesConfig)){
+        $dockerComposeConfig['volumes'] = $volumesConfig ;}
 
         return $dockerComposeConfig;
     }

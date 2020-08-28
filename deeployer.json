@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "$schema": "../deeployer.schema.json",
+  "containers": {
+      
+      "nginx": {
+        "image": "nginx:latest"
+      }
+
+    }
+  }
+

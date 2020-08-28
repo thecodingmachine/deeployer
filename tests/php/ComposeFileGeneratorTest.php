@@ -12,10 +12,22 @@ class ComposeFileGeneratorTest extends TestCase
     public function testTraefikConfig(): void
     {
         $generator = new ComposeFileGenerator();
-        $result = $generator->createTraefikConf();
+        $config = [
+            "version" => '1.0',
+            "containers" => [
+                "php" => [
+                    "host" => [
+                        'url' => 'myhost.com',
+                    ],
+                    "image" => "thecodingmachine/php:7.4-v3-apache",
+                ]
+            ]
+        ];
+        $result = $generator->createTraefikConf($config);
         $expected = [
             "image" => "traefik:2.0",
             "command" => [
+                "--entrypoints.web.address=:80",
                 "--providers.docker",
                 "--providers.docker.exposedByDefault=false"
             ],
@@ -29,6 +41,51 @@ class ComposeFileGeneratorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testTraefikConfigWithHttps(): void
+    {
+        $generator = new ComposeFileGenerator();
+        $config = [
+            "version" => '3.3',
+            "containers" => [
+                "php" => [
+                    "host" => [
+                        'url' => 'myhost.com',
+                        'https' => 'true'
+                    ],
+                    "image" => "thecodingmachine/php:7.4-v3-apache",
+                ]
+            ],
+            "config" => [
+                "https" => [
+                    "mail" => "dt@thecodingmachine.com"
+                ]
+            ]
+        ];
+        $expected = [
+                    "image" => "traefik:2.0",
+                    "command" => [
+                        "--entrypoints.web.address=:80",
+                        "--providers.docker",
+                        "--providers.docker.exposedByDefault=false",
+                        "--certificatesresolvers.le.acme.email=dt@thecodingmachine.com",
+                        "--certificatesresolvers.le.acme.storage=/acme.json",
+                        "--certificatesresolvers.le.acme.tlschallenge=true"
+
+                    ],
+                    "ports" => [
+                        "80:80",
+                        "443:443"
+                    ],
+                    "volumes" => [
+                        "/var/run/docker.sock:/var/run/docker.sock",
+                        "./conf/traefik/acme.json:/acme.json"
+                    ]
+        ];
+        $result = $generator->createTraefikConf($config);
+        $this->assertEquals($expected, $result);
+    }
+
+
     public function testServiceConfigWithoutLabel(): void
     {
         $generator = new ComposeFileGenerator();
@@ -39,6 +96,24 @@ class ComposeFileGeneratorTest extends TestCase
         $this->assertEquals([
             'image' => 'myimage'
         ], $result);
+    }
+
+    public function testTraefikLabelsConfigWithHttps(): void
+    {
+        $generator = new ComposeFileGenerator();
+        $hostConfig = [
+            'url' => 'myhost.com',
+            'https' => 'true'
+        ];
+        $result = $generator->createTraefikLabels($hostConfig, 'mysql');
+        $expected = [
+            'traefik.enable=true',
+            'traefik.http.routers.mysql.rule=Host(`myhost.com`)',
+            'traefik.http.routers.mysql.tls=true',
+            'traefik.http.routers.mysql.tls.certresolver=le',
+            'traefik.http.routers.mysql.entrypoints=websecure'
+        ];
+        $this->assertEquals($expected, $result);
     }
 
     public function testServiceConfigWithVolumes(): void
@@ -88,10 +163,10 @@ class ComposeFileGeneratorTest extends TestCase
         $hostConfig = [
             'url' => 'myhost.com'
         ];
-        $result = $generator->createTraefikLabels($hostConfig);
+        $result = $generator->createTraefikLabels($hostConfig, 'mysql');
         $expected = [
             'traefik.enable=true',
-            'traefik.http.routers.front_router.rule=Host(`myhost.com`)'
+            'traefik.http.routers.mysql.rule=Host(`myhost.com`)'
         ];
         $this->assertEquals($expected, $result);
     }
@@ -105,12 +180,13 @@ class ComposeFileGeneratorTest extends TestCase
             "containers" => [
                 "php" => [
                     "host" => [
-                        'url' => 'myhost.com'
+                        'url' => 'myhost.com',
+                        'https' => 'true'
                     ],
                     "image" => "thecodingmachine/php:7.4-v3-apache",
                 ],
                 "mysql" => [
-                    "image" => "mysql"
+                    "image" => "mysql:5.8"
                 ],
                 "phpmyadmin" => [
                     "host" => [
@@ -120,6 +196,12 @@ class ComposeFileGeneratorTest extends TestCase
                     "ports" => [
                         0 => 80
                     ]
+                ]
+
+                    ],
+            "config" => [
+                "https" => [
+                    "mail" => "m.diallo@thecodingmachine.com"
                 ]
 
             ]
@@ -150,8 +232,8 @@ class ComposeFileGeneratorTest extends TestCase
         $createdConfig = $generator->createDockerComposeConfig($config);
 
         $this->assertArrayHasKey('traefik', $createdConfig['services']);
-        $this->assertNotSame('traefik.enable=true', $createdConfig['services']['php']['labels'][1]);
-        $this->assertNotSame('traefik.http.routers.php.rule=Host(`myhost.com`)', $createdConfig['services']['php']['labels'][1]);
+        $this->assertSame('traefik.enable=true', $createdConfig['services']['php']['labels'][0]);
+        $this->assertSame('traefik.http.routers.php.rule=Host(`myhost.com`)', $createdConfig['services']['php']['labels'][1]);
     }
 
     public function testThereIsNoTraefikIfThereIsNoHost(): void
@@ -159,15 +241,15 @@ class ComposeFileGeneratorTest extends TestCase
         $generator = new ComposeFileGenerator();
 
         $config = [
-            "version" => '1.0',
+            "version" => '3.3',
             "containers" => [
                 "mysql" => [
-                    "image" => "mysql"
+                    "image" => "mysql",
                 ]
             ]
         ];
         $createdConfig = $generator->createDockerComposeConfig($config);
-        $this->assertArrayHasKey('traefik', $createdConfig['services']);
+        $this->assertArrayNotHasKey('traefik', $createdConfig['services']);
     }
 
 
@@ -176,6 +258,7 @@ class ComposeFileGeneratorTest extends TestCase
         $generator = new ComposeFileGenerator();
 
         $config = [
+            "version" => '1.0',
             "containers" => [
                 "mysql" => [
                     "image" => "mysql",
@@ -189,17 +272,7 @@ class ComposeFileGeneratorTest extends TestCase
             ]
         ];
         $createdConfig = $generator->createDockerComposeConfig($config);
-        //$this->assertArrayHasKey('mysqldata', $createdConfig['volumes']);
-        $this->assertEquals([
-            "services" => [
-                "mysql" => [
-                    "image" => "mysql",
-                    "volumes" => ["mysqldata:/var/lib/mysql"]
-                ]
-                ],
-            "volumes" => [
-                "mysql_data" => [ "driver" => "local"]
-            ]
-        ], $createdConfig);
+        $this->assertEquals("local", $createdConfig['volumes']['mysqldata']['driver']);
+        $this->assertEquals(["mysqldata:/var/lib/mysql"], $createdConfig['services']['mysql']['volumes']);
     }
 }
