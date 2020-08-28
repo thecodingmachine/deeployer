@@ -40,8 +40,8 @@ class ComposeFileGenerator
             if (isset ($service['host']) ){
                 return true;
             }
-            return false;
         }
+        return false;
     }
 
     public function createTraefikConf(array $deeployerConfig ): array
