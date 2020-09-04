@@ -27,9 +27,12 @@ class ComposeFileGeneratorTest extends TestCase
         $expected = [
             "image" => "traefik:2.0",
             "command" => [
+                "--global.sendAnonymousUsage=false",
+                "--log.level=DEBUG",
+                "--providers.docker=true",
+                "--providers.docker.exposedbydefault=false",
+                "--providers.docker.swarmMode=false",
                 "--entrypoints.web.address=:80",
-                "--providers.docker",
-                "--providers.docker.exposedByDefault=false"
             ],
             "ports" => [
                 "80:80"
@@ -64,12 +67,17 @@ class ComposeFileGeneratorTest extends TestCase
         $expected = [
                     "image" => "traefik:2.0",
                     "command" => [
+                        "--global.sendAnonymousUsage=false",
+                        "--log.level=DEBUG",
+                        "--providers.docker=true",
+                        "--providers.docker.exposedbydefault=false",
+                        "--providers.docker.swarmMode=false",
                         "--entrypoints.web.address=:80",
-                        "--providers.docker",
-                        "--providers.docker.exposedByDefault=false",
-                        "--certificatesresolvers.le.acme.email=dt@thecodingmachine.com",
-                        "--certificatesresolvers.le.acme.storage=/acme.json",
-                        "--certificatesresolvers.le.acme.tlschallenge=true"
+                        "--entrypoints.websecured.address=:443",
+                        "--certificatesresolvers.letsencrypt.acme.email=dt@thecodingmachine.com",
+                        "--certificatesresolvers.letsencrypt.acme.storage=/acme.json",
+                        "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web",
+                        "--certificatesresolvers.letsencrypt.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
 
                     ],
                     "ports" => [
@@ -101,17 +109,31 @@ class ComposeFileGeneratorTest extends TestCase
     public function testTraefikLabelsConfigWithHttps(): void
     {
         $generator = new ComposeFileGenerator();
+        $Config = array (
+            'version' => '1.0',
+            '$schema' => '../deeployer.schema.json',
+            'containers' => 
+            array (
+              'phpmyadmin' => 
+              array (
+                'image' => 'phpmyadmin/phpmyadmin',
+                'host' => 
+                array (
+                  'url' => 'myhost.com',
+                  'https' => 'true'
+                ),
+              ),
+            ),
+          );
         $hostConfig = [
             'url' => 'myhost.com',
-            'https' => 'true'
+            'https' => 'enable'
         ];
-        $result = $generator->createTraefikLabels($hostConfig, 'mysql');
+        $result = $generator->createTraefikLabels($hostConfig, 'phpmyadmin');
         $expected = [
-            'traefik.enable=true',
-            'traefik.http.routers.mysql.rule=Host(`myhost.com`)',
-            'traefik.http.routers.mysql.tls=true',
-            'traefik.http.routers.mysql.tls.certresolver=le',
-            'traefik.http.routers.mysql.entrypoints=websecure'
+            "traefik.enable=true",
+            "traefik.http.routers.phpmyadmin.rule=Host(`myhost.com`)",
+            "traefik.http.routers.phpmyadmin.entrypoints=websecured"
         ];
         $this->assertEquals($expected, $result);
     }

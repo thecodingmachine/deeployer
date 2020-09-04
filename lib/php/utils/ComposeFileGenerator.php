@@ -30,7 +30,7 @@ class ComposeFileGenerator
         return self::TmpFilePath;
     }
 
-    public function editConfig()
+    public function editConfig(): void
     {
         $output = "";
         exec ("jsonnet /home/mika/tanka/deeployer/scripts/main-compose.jsonnet", $output);
