@@ -191,7 +191,6 @@
     else
       {}
   ,
-  //??
   deeployer:: {
     generateResourcesWithoutExtension(config)::
       local generateContainer = function(deploymentName, data) f(config, deploymentName, data);

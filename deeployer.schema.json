@@ -148,18 +148,9 @@
             }
           }
         },
-        "docker-compose": {
-          "type":"object",
-          "properties": {
-            "command" : {
-              "type":"array"
-            },
-            "labels" : {
-              "type":"array"
-            }
-          }
+        "dynamic": {
+          "type": "string"
         }
-
       }
     }
   },

@@ -15,16 +15,37 @@ class ComposeFileGenerator
     public function createFile(array $deeployerConfig): string
     {
         $dockerFileConfig = $this->createDockerComposeConfig($deeployerConfig);
-        $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
+            $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
+            if ($returnCode === false) {
+                throw new \RuntimeException('Error when trying to create the docker-compose file');
+            }
+        if (isset($deeployerConfig['config']['dynamic'])) {
+            $this->generateDynamicConfigFunction($deeployerConfig['config']['dynamic']);
+            $this->editConfig();
 
-        // Checking if the content of TmpFilePath is well encoded
-        if ($returnCode === false) {
-            throw new \RuntimeException('Error when trying to create the docker-compose file');
         }
+        // exit;
+        //dynamically edit config file with libsonnet
+
         return self::TmpFilePath;
     }
 
-    public function httpsChecker(array $deeployerConfig): bool
+    public function editConfig()
+    {
+        $output = "";
+        exec ("jsonnet /home/mika/tanka/deeployer/scripts/main-compose.jsonnet", $output);
+        file_put_contents(self::TmpFilePath, $output);
+    }
+
+    private function generateDynamicConfigFunction(string $dynamicFunctionConfig): void
+    {
+        $dynamicFunction = "{\n$dynamicFunctionConfig\n}\n";
+        // $dynamicFunction = $dynamicFunctionConfig;
+        file_put_contents("/tmp/dynamic-function.libsonnet", $dynamicFunction);
+    }
+
+
+    private function httpsChecker(array $deeployerConfig): bool
     {
         foreach ($deeployerConfig['containers'] as $serviceName => $service){
             if (isset ($service['host']['https']) && $service['host']['https'] == true){
@@ -34,7 +55,7 @@ class ComposeFileGenerator
         return false;
     }
 
-    public function httpChecker(array $deeployerConfig): bool
+    private function httpChecker(array $deeployerConfig): bool
     {
         foreach ($deeployerConfig['containers'] as $serviceName => $service){
             if (isset ($service['host']) ){
@@ -49,9 +70,13 @@ class ComposeFileGenerator
        $HttpTraefikConfig=[
             "image" => "traefik:2.0",
             "command" => [
+                "--global.sendAnonymousUsage=false",
+                "--log.level=DEBUG",
+                "--providers.docker=true",
+                "--providers.docker.exposedbydefault=false",
+                "--providers.docker.swarmMode=false",
                 "--entrypoints.web.address=:80",
-                "--providers.docker",
-                "--providers.docker.exposedByDefault=false",
+                // "--providers.docker.endpoint=\"unix:///var/run/docker.sock\"",
             ],
             "ports" => [
                 "80:80",
@@ -66,9 +91,11 @@ class ComposeFileGenerator
             if (!isset ($deeployerConfig['config']['https']['mail'])) {
                 throw new \RuntimeException('Error you need to set in the config section of your file the mail field');
             }
-            $HttpTraefikConfig['command'][]= "--certificatesresolvers.le.acme.email=".$deeployerConfig['config']['https']['mail'];
-            $HttpTraefikConfig['command'][]= "--certificatesresolvers.le.acme.storage=/acme.json";
-            $HttpTraefikConfig['command'][]= "--certificatesresolvers.le.acme.tlschallenge=true";
+            $HttpTraefikConfig['command'][]= "--entrypoints.websecured.address=:443";
+            $HttpTraefikConfig['command'][]= "--certificatesresolvers.letsencrypt.acme.email=".$deeployerConfig['config']['https']['mail'];
+            $HttpTraefikConfig['command'][]= "--certificatesresolvers.letsencrypt.acme.storage=/acme.json";
+            $HttpTraefikConfig['command'][]= "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web";
+            $HttpTraefikConfig['command'][]= "--certificatesresolvers.letsencrypt.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory";
             $HttpTraefikConfig['volumes'][]= "./conf/traefik/acme.json:/acme.json";
         }
         return $HttpTraefikConfig;
@@ -81,10 +108,8 @@ class ComposeFileGenerator
             'traefik.enable=true',
             "traefik.http.routers.$serviceName.rule=Host(`$host`)"
         ];
-        if (isset($hostConfig['https']) && $hostConfig['https'] == true) {
-            $httpLabels[] = "traefik.http.routers.$serviceName.tls=true";
-            $httpLabels[] = "traefik.http.routers.$serviceName.tls.certresolver=le";
-            $httpLabels[] = "traefik.http.routers.$serviceName.entrypoints=websecure";
+        if (isset($hostConfig['https']) && $hostConfig['https'] == "enable") {
+            $httpLabels[] = "traefik.http.routers.$serviceName.entrypoints=websecured";
         }
         return $httpLabels;
     }
@@ -148,7 +173,6 @@ class ComposeFileGenerator
             }
         }
         return $volumesConfig;
-        
     }
 
     public function createDockerComposeConfig(array $deeployerConfig ): array

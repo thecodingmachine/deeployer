@@ -50,7 +50,7 @@ class ComposeFileGeneratorTest extends TestCase
                 "php" => [
                     "host" => [
                         'url' => 'myhost.com',
-                        'https' => 'true'
+                        'https' => 'enable'
                     ],
                     "image" => "thecodingmachine/php:7.4-v3-apache",
                 ]
