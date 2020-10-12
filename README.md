@@ -416,7 +416,7 @@ deploy_branches:
     - deeployer-k8s apply --namespace ${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}
   environment:
     name: review/$CI_COMMIT_REF_NAME
-    url: https://bigbro.thecodingmachine.com/environment/${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}
+    url: https://${CI_COMMIT_REF_SLUG}.${CI_PROJECT_PATH_SLUG}.test.yourapp.com
     on_stop: cleanup_branches
   only:
     - branches
@@ -424,6 +424,8 @@ deploy_branches:
 cleanup_branches:
   stage: cleanup
   image: thecodingmachine/deeployer:latest
+  variables:
+    GIT_STRATEGY: none
   script:
     - deeployer-k8s delete --namespace ${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}
   when: manual
