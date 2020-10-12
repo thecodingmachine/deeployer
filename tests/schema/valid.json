@@ -43,5 +43,10 @@
 
 
         }
+    },
+    "config": {
+        "registryCredentials": {
+            "url": "foo.com:444"
+        }
     }
 }

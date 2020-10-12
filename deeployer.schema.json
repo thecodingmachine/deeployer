@@ -136,7 +136,7 @@
             },
             "url":{
               "type": "string",
-              "format": "hostname"
+              "format": "uri"
             },
             "user": {
               "type": "string",
