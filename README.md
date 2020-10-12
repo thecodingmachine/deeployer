@@ -499,14 +499,16 @@ Put the credentials to your images in the "config" section:
 {
   "config": {
     "registryCredentials": {
-        "secret_name": "secret-registry",
-        "url": "registry.example.com",
+      "registry.example.com": {
         "user": "my_user",
         "password": "my_password"
+      }
     }
   }
 }
 ```
+
+Please note that the key of the "registryCredentials" object is the URL to your Docker private registry.
 
 These will be automatically passed to Kubernetes that will create a "registry secret".
 

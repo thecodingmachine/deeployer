@@ -129,22 +129,25 @@
         },
         "registryCredentials": {
           "type":"object",
-          "properties": {
-            "secret_name": {
-              "type": "string",
-              "minLength": 1
-            },
-            "url":{
-              "type": "string",
-              "format": "uri"
-            },
-            "user": {
-              "type": "string",
-              "minLength": 1
-            },
-            "password": {
-              "type": "string",
-              "minLength": 1
+          "additionalProperties": true,
+          "patternProperties": {
+            ".*": {
+              "type":"object",
+              "additionalProperties": false,
+              "properties": {
+                "user": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "user",
+                "password"
+              ]
             }
           }
         }
