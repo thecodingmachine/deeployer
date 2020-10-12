@@ -46,7 +46,10 @@
     },
     "config": {
         "registryCredentials": {
-            "url": "foo.com:444"
+            "foo.com:444": {
+                "user": "bar",
+                "password": "foo"
+            }
         }
     }
 }
