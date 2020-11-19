@@ -36,8 +36,7 @@ RUN cd /deeployer && jb install
 RUN cd /deeployer && composer install
 
 RUN ln -s /deeployer/scripts/deeployer-k8s /usr/local/bin/deeployer-k8s
+RUN ln -s /deeployer/scripts/deeployer-compose.php /usr/local/bin/deeployer-compose
 
 WORKDIR /var/app
-
-RUN echo "alias deeployer-compose='php /deeployer/scripts/deeployer-compose.php'" >> ~/.bashrc
 
