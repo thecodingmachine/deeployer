@@ -326,7 +326,7 @@ $ deeployer-k8s show deeployer-dev.jsonnet
 The "show" command is only used for debugging. In order to make an actual deployment, use the "apply" command:
 
 ```console 
-$ deeployer-k8s apply --namespace=target-namespace
+$ deeployer-k8s apply --namespace target-namespace
 ```
 
 Important: if you are using Deeployer locally, Deeployer will not use your Kubectl config by default. You need to pass
@@ -335,7 +335,7 @@ the Kubectl configuration as an environment variable.
 Finally, you can delete a complete namespace using:
 
 ```console 
-$ deeployer-k8s delete --namespace=target-namespace
+$ deeployer-k8s delete --namespace target-namespace
 ```
 
 This is equivalent to using:
@@ -429,12 +429,62 @@ the image thecodingmachine/deeployer:latest needs a variable named KUBE_CONFIG_F
 ```
 
 Next, in the script section of the job we just use the command apply of deeployer-k8s with the mandatory option --namespace which in the case of the example is setted thanks to CI/CD variables.
+Since Deeployer is bundled as a Docker image, usage in Gitlab CI is very easy (assuming you are using a Docker based Gitlab CI runner, of course);
+
+**.gitlab-ci.yaml**
+```yaml
+stages:
+  # Your other stages ...
+  - deploy
+  - cleanup
+
+deploy_branches:
+  image: thecodingmachine/deeployer:latest
+  stage: deploy
+  script:
+    - deeployer-k8s apply --namespace ${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://${CI_COMMIT_REF_SLUG}.${CI_PROJECT_PATH_SLUG}.test.yourapp.com
+    on_stop: cleanup_branches
+  only:
+    - branches
+
+cleanup_branches:
+  stage: cleanup
+  image: thecodingmachine/deeployer:latest
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - deeployer-k8s delete --namespace ${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}
+  when: manual
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    action: stop
+  only:
+    - branches
+  except:
+    - master
+```
+
+For this to work, you will need to put the content of your Kubernetes configuration file in a `KUBE_CONFIG_FILE` environment variable in your project on Gitlab.
+
+### Deploying in a Google cloud Kubernetes cluster using Gitlab CI
+
+If you are connecting to a Google Cloud cluster, instead of passing a `KUBE_CONFIG_FILE`, you will need to pass
+this set of environment variables:
+
+- `GCLOUD_SERVICE_KEY`
+- `GCLOUD_PROJECT`
+- `GCLOUD_ZONE`
+- `GKE_CLUSTER`
 
 ## Usage in Github actions
 
 Deeployer comes with a Github action.
 
-```deploy_workflow.yaml
+**deploy_workflow.yaml**
+```yaml
 name: Deploy Docker image
 
 on:
@@ -467,6 +517,31 @@ this set of environment variables:
 - `GCLOUD_PROJECT`
 - `GCLOUD_ZONE`
 - `GKE_CLUSTER`
+
+## Passing registry credentials
+
+If you are using a private registry to store your Docker images, Deeployer needs the credentials to this registry in order
+to deploy images successfully.
+
+Put the credentials to your images in the "config" section:
+
+**deeployer.json**
+```
+{
+  "config": {
+    "registryCredentials": {
+      "registry.example.com": {
+        "user": "my_user",
+        "password": "my_password"
+      }
+    }
+  }
+}
+```
+
+Please note that the key of the "registryCredentials" object is the URL to your Docker private registry.
+
+These will be automatically passed to Kubernetes that will create a "registry secret".
 
 ## Contributing
 

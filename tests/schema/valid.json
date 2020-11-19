@@ -43,5 +43,13 @@
 
 
         }
+    },
+    "config": {
+        "registryCredentials": {
+            "foo.com:444": {
+                "user": "bar",
+                "password": "foo"
+            }
+        }
     }
 }
