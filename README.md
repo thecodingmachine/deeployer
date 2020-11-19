@@ -373,7 +373,11 @@ You need to install Cert Manager v0.11+.
 
 ### Deploying using docker-compose
 
-TODO
+To deploy with deeployer-compose, you need to setup the following alias on your local machine since deeployer in its first versions is only accessible thanks to its official docker-image :
+
+```
+alias deeployer-compose="docker run --rm -it -e \"JSON_ENV=\$(jq -n env)\" -v $(pwd):/var/app -v /var/run/docker.sock:/var/run/docker.sock thecodingmachine/deeployer:latest deeployer-compose"
+```
 
 
 ## Installing locally
@@ -400,6 +404,31 @@ $ deeployer-self-update
 
 ## Usage in Gitlab CI
 
+To use deeployer in gitlab ci, you'll need to specify in your .gitlab-ci.yml file a job for the deployment like in the following example :
+```
+deeploy:
+  image: thecodingmachine/deeployer:latest
+  stage: deploy
+  variables:
+    KUBE_CONFIG_FILE: ${KUBE_CONFIG}
+  script:
+    - deeployer-k8s apply --namespace ${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}
+    - curl "https://bigbro.thecodingmachine.com/gitlab/call/start-environment?projectId=${CI_PROJECT_ID}&commitSha=${CI_COMMIT_SHA}&ref=${CI_COMMIT_REF_NAME}&name=${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}"
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://bigbro.thecodingmachine.com/environment/${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}
+  when: manual
+  only:
+    - /^CD-.*$/
+```
+the image thecodingmachine/deeployer:latest needs a variable named KUBE_CONFIG_FILE which contains the kubernetes config file that gives you access to the cluster. In the case of the example we setted it as a CI/CD variable of gitlab since the feature is still available.
+
+```
+  variables:
+    KUBE_CONFIG_FILE: ${KUBE_CONFIG}
+```
+
+Next, in the script section of the job we just use the command apply of deeployer-k8s with the mandatory option --namespace which in the case of the example is setted thanks to CI/CD variables.
 Since Deeployer is bundled as a Docker image, usage in Gitlab CI is very easy (assuming you are using a Docker based Gitlab CI runner, of course);
 
 **.gitlab-ci.yaml**

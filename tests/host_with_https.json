@@ -6,7 +6,7 @@
         "host": {
           "url": "myhost.com",
           "containerPort": 80,
-          "https": true
+          "https": "enable"
         }
       }
     },
