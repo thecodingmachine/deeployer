@@ -8,7 +8,7 @@ class ConfigFileFinder
 {
     public const VALUE_1 = './deeployer.libsonnet';
     public const VALUE_2 = './deeployer.json';
-    
+
     /**
      * This search for an appropriate jsonnet config file and return its path
      */

@@ -20,7 +20,7 @@ RUN apt-get update &&\
     curl -sL https://deb.nodesource.com/setup_12.x | bash - &&\
     apt-get update &&\
     apt-get install -y --no-install-recommends nodejs jq docker-compose curl php-dom php-mbstring php-zip php-curl unzip
-    
+
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
     php composer-setup.php --install-dir=bin --filename=composer &&\
     php -r "unlink('composer-setup.php');"
@@ -33,15 +33,11 @@ COPY . /deeployer
 
 RUN cd /deeployer && jb install
 
+RUN cd /deeployer && composer install
+
 RUN ln -s /deeployer/scripts/deeployer-k8s /usr/local/bin/deeployer-k8s
 
 WORKDIR /var/app
 
-#RUN cp /var/app/deeployer.libsonnet lib/deeployer/deeployer.libsonnet
-
-
-#COPY Docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-
-
-#ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+RUN echo "alias deeployer-compose='php /deeployer/scripts/deeployer-compose.php'" >> ~/.bashrc
 

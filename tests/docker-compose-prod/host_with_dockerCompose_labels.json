@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "containers": {
+      "traefik": {
+        "image": "traefik:v2.2"
+      }
+    },
+  "config": {
+    "docker-compose": {
+      "labels": [
+        "traefik.enable=true",
+        "traefik.http.routers.traefik.rule=Host(`traefik.$HOST_NAME`)"
+      ]
+    }
+  }
+  }
