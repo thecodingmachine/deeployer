@@ -7,17 +7,16 @@ namespace App\utils;
 class ComposeFileGenerator
 {
     public const TmpFilePath = '/tmp/docker-compose.json';
-    public const volumesToGenerate = '';
 
 
 
     public function createFile(array $deeployerConfig): string
     {
         $dockerFileConfig = $this->createDockerComposeConfig($deeployerConfig);
-            $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig));
-            if ($returnCode === false) {
-                throw new \RuntimeException('Error when trying to create the docker-compose file');
-            }
+        $returnCode = file_put_contents(self::TmpFilePath, json_encode($dockerFileConfig, JSON_UNESCAPED_SLASHES));
+        if ($returnCode === false) {
+            throw new \RuntimeException('Error when trying to create the docker-compose file');
+        }
         if (isset($deeployerConfig['config']['dynamic'])) {
             $this->generateDynamicConfigFunction($deeployerConfig['config']['dynamic']);
             $this->editConfig();
@@ -32,7 +31,8 @@ class ComposeFileGenerator
     public function editConfig(): void
     {
         $output = "";
-        exec ("jsonnet /home/mika/tanka/deeployer/scripts/main-compose.jsonnet", $output);
+        $path = __DIR__.'/../../../scripts/main-compose.jsonnet';
+        exec ("jsonnet $path", $output);
         file_put_contents(self::TmpFilePath, $output);
     }
 
@@ -198,7 +198,8 @@ class ComposeFileGenerator
 
         $volumesConfig = $this->createVolumeConfig($deeployerConfig); // Need to put this in a variable
         if (!empty($volumesConfig)){
-        $dockerComposeConfig['volumes'] = $volumesConfig ;}
+            $dockerComposeConfig['volumes'] = $volumesConfig;
+        }
 
         return $dockerComposeConfig;
     }
