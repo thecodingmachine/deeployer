@@ -4,6 +4,8 @@
 namespace App\utils;
 
 
+use function getenv;
+
 class ConfigGenerator
 {
     public const schemaFilePath = __DIR__.'/../../../deeployer.schema.json';
@@ -15,11 +17,11 @@ class ConfigGenerator
     public function getConfig(string $userConfigFilePath): array
     {
         $tmpJsonFilePath = self::tmpFilePath;
-        $env = ""; //todo: get env variables from $ENV ?
-        Executor::execute("jsonnet $userConfigFilePath --ext-code \"env=$env\" --ext-str timestamp=\"2020-05-05 00:00:00\" > $tmpJsonFilePath");
+        $env = escapeshellarg('env='.getenv('JSON_ENV'));
+        Executor::execute("jsonnet $userConfigFilePath --ext-code $env --ext-str timestamp=\"".date('Y-m-d H:i:s')."\" > $tmpJsonFilePath");
         $schemaFilePath = self::schemaFilePath;
         Executor::execute("ajv test -s $schemaFilePath -d $tmpJsonFilePath --valid");
-        
+
         $content = file_get_contents($tmpJsonFilePath);
         if ($content === false) {
             throw new \RuntimeException("Error when reading $tmpJsonFilePath");
