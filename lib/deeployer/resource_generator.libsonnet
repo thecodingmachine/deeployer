@@ -118,7 +118,7 @@
           ingress: ingress.new() +
                    ingress.mixin.metadata.withName('ingress-' + deploymentName) +
                    {
-                     apiVersion: "networking.k8s.io/v1"
+                     apiVersion: 'networking.k8s.io/v1',
                    } +
                    //ingress.mixin.metadata.withLabels(data.labels)+
                    (if containerHasHttps(data) then
