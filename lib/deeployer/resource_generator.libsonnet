@@ -135,7 +135,9 @@
                                                  ingressRule.mixin.http.withPaths(
                                                    httpIngressPath.new() +
                                                    httpIngressPath.mixin.backend.withServiceName(deploymentName) +
-                                                   httpIngressPath.mixin.backend.withServicePort(getHttpPort(data, deploymentName))
+                                                   httpIngressPath.mixin.backend.withServicePort(getHttpPort(data, deploymentName)) + {
+                                                     pathType: 'ImplementationSpecific',
+                                                   }
                                                  )],)
                    + if containerHasHttps(data) then
                      {
