@@ -134,8 +134,15 @@
                                                  ingressRule.withHost(data.host.url) +
                                                  ingressRule.mixin.http.withPaths(
                                                    httpIngressPath.new() +
-                                                   httpIngressPath.mixin.backend.withServiceName(deploymentName) +
-                                                   httpIngressPath.mixin.backend.withServicePort(getHttpPort(data, deploymentName)) + {
+                                                   {
+                                                     backend: {
+                                                       service: {
+                                                         name: deploymentName,
+                                                         port: {
+                                                           number: getHttpPort(data, deploymentName),
+                                                         },
+                                                       },
+                                                     },
                                                      pathType: 'ImplementationSpecific',
                                                    }
                                                  )],)
