@@ -69,7 +69,7 @@ function assertValidK8s() {
     echo "  Testing K8S validity for: $1"
 
     set -o pipefail
-    OUTPUT=$(../scripts/deeployer-k8s show "$1" | kubeval)
+    OUTPUT=$(../scripts/deeployer-k8s show "$1" | kubeval --ignore-missing-schemas)
     if [[ $? != 0 ]]; then
         echo -e "\e[31m❌\e[39m Kubeval returned an error code"
         echo ""

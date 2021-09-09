@@ -8,6 +8,5 @@
 
   generatedConf: deeployer.generateResources(config),
 
-  
 
 }

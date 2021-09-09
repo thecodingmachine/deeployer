@@ -85,7 +85,7 @@ class ComposeFileGenerator
             ]
         ];
 
-        if ( $this-> httpsChecker($deeployerConfig) == true){
+        if ( $this->httpsChecker($deeployerConfig) == true){
             $HttpTraefikConfig['ports'][]= '443:443';
             if (!isset ($deeployerConfig['config']['https']['mail'])) {
                 throw new \RuntimeException('Error you need to set in the config section of your file the mail field');

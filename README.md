@@ -499,7 +499,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Deploy
-        uses: thecodingmachine/deeployer@master
+        uses: thecodingmachine/deeployer-action@master
         env:
           KUBE_CONFIG_FILE: ${{ secrets.KUBE_CONFIG_FILE }}
         with:
