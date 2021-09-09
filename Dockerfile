@@ -27,7 +27,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
 
 
 # install AJV for schema validation
-RUN npm install -g ajv-cli
+RUN npm install -g ajv-cli@^5
+RUN npm install -g ajv-formats@^2.1.1
 
 COPY . /deeployer
 

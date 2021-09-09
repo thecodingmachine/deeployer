@@ -77,7 +77,7 @@ if [[ "$COMMAND" != "delete" ]]; then
   # Let's validate the Deeployer file
   jsonnet $DEEPLOYER_FILE --ext-code "env=$JSON_ENV" --ext-str timestamp="2020-05-05 00:00:00" > /tmp/deeployer.json
   set +e
-  OUTPUT=`ajv test -s $DIR/../deeployer.schema.json -d /tmp/deeployer.json --valid`
+  OUTPUT=`ajv test -s $DIR/../deeployer.schema.json -d /tmp/deeployer.json --valid -c ajv-formats`
   if [[ $? != 0 ]]; then
     echo "$OUTPUT"
     echo -e "\e[31m❌\e[39m Your configuration file '$DEEPLOYER_FILE' has an invalid format. See the message above for details."

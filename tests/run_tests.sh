@@ -32,19 +32,19 @@ expectValue "Testing creation of Traefik when a host is added" "docker-compose-p
 # Schema test
 echo "Starting JsonSchema tests"
 
-ajv test -s ../deeployer.schema.json -d schema/valid.json --valid
-ajv test -s ../deeployer.schema.json -d schema/invalid_without_version.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_with_wrong_version.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_with_unknown_properties.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_container_with_wrong_declared_envVars.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_without_image.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_test_testing_envVars_with_a_specialObject.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_test_testing_envVars_with_nonStringValue.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_image.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_max_cpu.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_min_cpu.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_max_memory.json --invalid
-ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_min_memory.json --invalid
+ajv test -s ../deeployer.schema.json -d schema/valid.json --valid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_without_version.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_with_wrong_version.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_with_unknown_properties.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_container_with_wrong_declared_envVars.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_container_definition_without_image.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_test_testing_envVars_with_a_specialObject.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_test_testing_envVars_with_nonStringValue.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_image.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_max_cpu.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_min_cpu.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_max_memory.json --invalid -c ajv-formats
+ajv test -s ../deeployer.schema.json -d schema/invalid_properties_definition_with_emptyString_in_min_memory.json --invalid -c ajv-formats
 
 echo
 echo

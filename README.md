@@ -560,7 +560,8 @@ Download and install Kubeval: https://kubeval.instrumenta.dev/installation/
 Download and install AJV:
 
 ```bash
-$ sudo npm install -g ajv-cli
+$ sudo npm install -g ajv-cli@^5
+$ sudo npm install -g ajv-formats@^2.1.1
 ```
 
 Download and install Jsonlint:

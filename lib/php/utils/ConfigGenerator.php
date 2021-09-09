@@ -20,7 +20,7 @@ class ConfigGenerator
         $env = escapeshellarg('env='.getenv('JSON_ENV'));
         Executor::execute("jsonnet $userConfigFilePath --ext-code $env --ext-str timestamp=\"".date('Y-m-d H:i:s')."\" > $tmpJsonFilePath");
         $schemaFilePath = self::schemaFilePath;
-        Executor::execute("ajv test -s $schemaFilePath -d $tmpJsonFilePath --valid");
+        Executor::execute("ajv test -s $schemaFilePath -d $tmpJsonFilePath --valid -c ajv-formats");
 
         $content = file_get_contents($tmpJsonFilePath);
         if ($content === false) {
