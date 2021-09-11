@@ -371,6 +371,40 @@ You do not need to create a "cluster issuer" as Deeployer will come with its own
 
 You need to install Cert Manager v0.11+.
 
+#### Preventing automatic redeployment
+
+By default, in Kubernetes, all pods will be halted, and restarted. Even if the configuration did not change (Deeployer tries to redownload the latest version of the image).
+But in the case of some services (like a MySQL database or a Redis server), stopping and restarting the service will cause
+a disruption, for no good reason.
+
+You can tell Deeployer to not restart a pod automatically using the "redeploy": "onConfigChange" option.
+
+**deeployer.json**
+```json
+{
+  "version": "1.0",
+  "$schema": "https://raw.githubusercontent.com/thecodingmachine/deeployer/master/deeployer.schema.json",
+  "containers": {
+    "mysql": {
+      "image": "mysql:8.0",
+      "ports": [3306],
+      "env": {
+        "MYSQL_ROOT_PASSWORD": "secret"
+      },
+      "redeploy": "onConfigChange"
+    }
+  }
+}
+```
+
+
+With `"redeploy": "onConfigChange"`, your pod will be changed only if the configuration is changed.
+
+#### Redeployment strategy
+
+In Kubernetes, by default, Deeployer will stop and recreate the pod if there is only one pod (if you did not set the `replicas` property).
+If you configured `replicas` to a value greater than 1, Deeployer will use a "RollingUpdate" for this pod.
+
 ### Deploying using docker-compose
 
 To deploy with deeployer-compose, you need to setup the following alias on your local machine since deeployer in its first versions is only accessible thanks to its official docker-image :

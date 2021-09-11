@@ -93,14 +93,21 @@
                        else {}),
                     ]
                   ) +
-                  deployment.mixin.spec.strategy.withType('Recreate') +
+                  (
+                    if (std.objectHas(data, 'replicas') && data.replicas > 1) then
+                      deployment.mixin.spec.strategy.withType('RollingUpdate')
+                    else
+                      deployment.mixin.spec.strategy.withType('Recreate')
+                  ) +
                   (if std.objectHas(config, 'config') && std.objectHas(config.config, 'registryCredentials') then
                      deployment.mixin.spec.template.spec.withImagePullSecrets([(ImagePullSecret.new() + ImagePullSecret.withName('a' + std.md5(registryUrl))) for registryUrl in std.objectFields(config.config.registryCredentials)],)
                    else {})
                   +
-                  // we add the current date to a random label to force a redeployment, even if the container name did not change.
-                  // TODO: in the future, we might want to add this timestamp only for images that we are in charge of.
-                  deployment.mixin.spec.template.metadata.withLabelsMixin({ deeployerTimestamp: std.extVar('timestamp') }),
+                  // we add the current date to a random label to force a redeployment, even if the container name did not change,
+                  // unless we find redeploy: onConfigChange
+                  (if !std.objectHas(data, 'redeploy') || data.redeploy != 'onConfigChange' then
+                     deployment.mixin.spec.template.metadata.withLabelsMixin({ deeployerTimestamp: std.extVar('timestamp') })
+                   else {}),
 
       //std.mapWithKey(fv, data.volumes),
     } + (if std.objectHas(data, 'volumes') then {

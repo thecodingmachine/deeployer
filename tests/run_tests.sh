@@ -18,6 +18,7 @@ expectValue "Testing https enable (issuer)" "host_with_https.json" ".generatedCo
 expectError "Testing https enable (missing mail)" "host_with_https_without_mail.json" "In order to have support for HTTPS, you need to provide an email address in the { \"config\": { \"https\": { \"mail\": \"some@email.com\" } } }" ../scripts/main.jsonnet
 expectValue "Testing the presence of a timestamp label to force reloading" "host.json" ".generatedConf.phpmyadmin.deployment.spec.template.metadata.labels.deeployerTimestamp" '"2020-05-05 00:00:00"' ../scripts/main.jsonnet
 expectValue "Testing the presence of a PVC" "volume.json" ".generatedConf.mysql.pvcs.data.spec.resources.requests.storage" '"1G"' ../scripts/main.jsonnet
+expectValue "Testing the RollingUpdate type when there are replicas" "replicas.json" ".generatedConf.phpmyadmin.deployment.spec.strategy.type" '"RollingUpdate"' ../scripts/main.jsonnet
 assertValidK8s "host.json" ../scripts/main.jsonnet
 assertValidK8s "volume.json" ../scripts/main.jsonnet
 expectValue "Testing the presence of a registry credential" "registryCredentials.json" ".generatedConf.phpmyadmin.deployment.spec.template.spec.imagePullSecrets[0].name" '"aa827ffc96199a7071140cc2267bc1b1a"' ../scripts/main.jsonnet
