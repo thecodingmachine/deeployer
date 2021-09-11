@@ -29,6 +29,13 @@
                 "type": "string"
               }
             },
+            "redeploy": {
+              "type": "string",
+              "enum": [
+                "always",
+                "onConfigChange"
+              ]
+            },
             "host": {
               "type": "object",
               "properties": {
