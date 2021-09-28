@@ -11,6 +11,7 @@ expectError "Testing creation of host with a low version number" "host_with_low_
 
 expectError "Testing creation of host without a port" "host_without_port.json" "For container \"phpmyadmin\", host \"myhost.com\" needs a port to bind to. Please provide a containerPort in the \"host\" section." ../scripts/main.jsonnet
 expectValue "Testing creation of ingress when a host is added" "host.json" ".generatedConf.phpmyadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
+expectValue "Testing creation of readiness probe when a host is added" "host.json" ".generatedConf.phpmyadmin.deployment.spec.template.spec.containers[0].readinessProbe.httpGet.port" '80' ../scripts/main.jsonnet
 expectValue "Testing containerPort of ingress when a host is added" "host_with_container_port.json" ".generatedConf.phpmyadmin.ingress.spec.rules[0].host" '"myhost.com"' ../scripts/main.jsonnet
 expectValue "Testing https enable (metadata section)" "host_with_https.json" ".generatedConf.phpmyadmin.ingress.metadata.annotations[\"cert-manager.io/issuer\"]" '"letsencrypt-prod"' ../scripts/main.jsonnet
 expectValue "Testing https enable (tls section)" "host_with_https.json" ".generatedConf.phpmyadmin.ingress.spec.tls[0].hosts[0]" '"myhost.com"' ../scripts/main.jsonnet

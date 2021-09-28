@@ -90,7 +90,20 @@
                       +
                       (if std.objectHas(data, 'quotas') then
                          container.mixin.resources.withRequests(data.quotas.min).withLimits(data.quotas.max)
-                       else {}),
+                       else {})
+                      + (
+                        if std.objectHas(data, 'host') then
+                          {
+                            readinessProbe: {
+                              httpGet: {
+                                port: getHttpPort(data, deploymentName),
+                              },
+                            },
+                          }
+
+                        else {}
+
+                      ),
                     ]
                   ) +
                   (
