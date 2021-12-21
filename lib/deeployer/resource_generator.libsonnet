@@ -115,13 +115,13 @@
          } else {})
     + (
       if std.objectHas(data, 'ports') then
-        { service: $.util.serviceFor(self.deployment) }
+        { service: $.util.serviceFor(self.deployment, ['deeployerTimestamp']) }
       else {}
     )
     + (
       if std.objectHas(data, 'host') then
         {
-          service: $.util.serviceFor(self.deployment),
+          service: $.util.serviceFor(self.deployment, ['deeployerTimestamp']),
           ingress: ingress.new() +
                    ingress.mixin.metadata.withName('ingress-' + deploymentName) +
                    {
@@ -166,7 +166,7 @@
                      {},
         }
 
-      else { service: $.util.serviceFor(self.deployment) }
+      else { service: $.util.serviceFor(self.deployment, ['deeployerTimestamp']) }
 
     ) + (if std.objectHas(data, 'volumes') then {
            pvcs: std.mapWithKey(function(pvcName, pvcData) { apiVersion: 'v1', kind: 'PersistentVolumeClaim' } +
